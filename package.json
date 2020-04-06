@@ -35,5 +35,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/gapi.auth2": "0.0.51",
+    "@types/gapi.client.calendar": "^3.0.1"
   }
 }
