@@ -6,7 +6,7 @@ import './index.css';
 import App from './App/App';
 import * as serviceWorker from './serviceWorker';
 
-import { initClient } from './logic/initGApiClient';
+import { initClient } from './lib/initGApiClient';
 
 const render = (appProps: Parameters<typeof App>[0]) => {
   ReactDOM.render(

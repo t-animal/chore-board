@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { signOut, signIn } from '../logic/authApiFacade';
+import { signOut, signIn } from '../lib/authApiFacade';
 import UpcomingEvents from '../components/UpcomingEvents';
 
 

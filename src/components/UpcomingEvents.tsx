@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getAllUpcomingEvents } from "../logic/calendarApiFacade";
+import { getAllUpcomingEvents } from "../lib/calendarApiFacade";
 
 export default function UpcomingEvents() {
 
