@@ -22,7 +22,7 @@ function App(props: {apiLoaded: boolean, signedIn: boolean}) {
            ? <button onClick={() => signOut()}>SignOut</button>
            : <button onClick={() => signIn()}>Auth</button> }
 
-        <UpcomingEvents></UpcomingEvents>
+        <UpcomingEvents calendarId={calendarId}></UpcomingEvents>
 
         <CalendarSelector newCalendarSelected={setCalendarId}></CalendarSelector>
       </header>

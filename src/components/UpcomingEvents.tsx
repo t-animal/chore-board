@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { getAllUpcomingEvents } from "../lib/calendarApiFacade";
 
-export default function UpcomingEvents() {
+type UpcomingEventsProps = {
+  calendarId: string
+};
 
+export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId: 'primary'}) {
+
+  const [loadedCalendar, setLoadedCalendar] = useState<null | string>(null);
   const [messages, setMessages] = useState([] as string[]);
 
   function addMessages(newMessages: string[]) {
@@ -10,7 +15,7 @@ export default function UpcomingEvents() {
   }
 
   async function listUpcomingEvents() {
-    const events = await getAllUpcomingEvents();
+    const events = await getAllUpcomingEvents(props.calendarId);
 
     const messagesToAdd = ['Upcoming events:'];
 
@@ -29,8 +34,10 @@ export default function UpcomingEvents() {
     addMessages(messagesToAdd);
   }
 
-  if(messages.length === 0)
+  if(loadedCalendar !== props.calendarId) {
+    setLoadedCalendar(props.calendarId);
     listUpcomingEvents();
+  }
 
   return (
     <pre>

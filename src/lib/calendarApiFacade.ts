@@ -1,7 +1,7 @@
 
-export async function getAllUpcomingEvents() {
+export async function getAllUpcomingEvents(calendarId: string) {
   const response = await gapi.client.calendar.events.list({
-    'calendarId': 'primary',
+    calendarId,
     'timeMin': (new Date()).toISOString(),
     'showDeleted': false,
     'singleEvents': true,
