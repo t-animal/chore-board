@@ -17,7 +17,8 @@ const render = (appProps: Parameters<typeof App>[0]) => {
   );
 }
 
-render({signedIn: false});
+render({apiLoaded: false, signedIn: false})
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

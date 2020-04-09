@@ -22,9 +22,9 @@ export async function initClient(renderFunction: (appProps: Parameters<typeof Ap
     });
 
     // Listen for sign-in state changes.
-    gapi.auth2.getAuthInstance().isSignedIn.listen(signedIn => renderFunction({signedIn}));
+    gapi.auth2.getAuthInstance().isSignedIn.listen(signedIn => renderFunction({apiLoaded: true, signedIn}));
 
-    renderFunction({signedIn: isUserSignedIn()});
+    renderFunction({apiLoaded: true, signedIn: isUserSignedIn()});
   } catch(error) {
     console.error(JSON.stringify(error, null, 2));
   }

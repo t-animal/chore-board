@@ -4,8 +4,13 @@ import { signOut, signIn } from '../logic/authApiFacade';
 import UpcomingEvents from '../components/UpcomingEvents';
 
 
-function App(props: {signedIn: boolean}) {
+function App(props: {apiLoaded: boolean, signedIn: boolean}) {
 
+  if(!props.apiLoaded) {
+    return (
+      <span>Waiting for google api to load...</span>
+    )
+  }
 
   return (
     <div className="App">
