@@ -1,5 +1,6 @@
-import { CLIENT_ID } from './api-keys';
-import App from './App/App';
+import { CLIENT_ID } from '../api-keys';
+import App from '../App/App';
+import { isUserSignedIn } from './authApiFacade';
 
 // Array of API discovery doc URLs for APIs used by the quickstart
 const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
@@ -23,7 +24,7 @@ export async function initClient(renderFunction: (appProps: Parameters<typeof Ap
     // Listen for sign-in state changes.
     gapi.auth2.getAuthInstance().isSignedIn.listen(signedIn => renderFunction({signedIn}));
 
-    renderFunction({signedIn: gapi.auth2.getAuthInstance().isSignedIn.get()});
+    renderFunction({signedIn: isUserSignedIn()});
   } catch(error) {
     console.error(JSON.stringify(error, null, 2));
   }
