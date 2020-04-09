@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { getAllUpcomingEvents } from "../lib/calendarApiFacade";
 
+type Event = gapi.client.calendar.Event;
 type UpcomingEventsProps = {
   calendarId: string
 };
@@ -8,30 +9,28 @@ type UpcomingEventsProps = {
 export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId: 'primary'}) {
 
   const [loadedCalendar, setLoadedCalendar] = useState<null | string>(null);
-  const [messages, setMessages] = useState([] as string[]);
-
-  function addMessages(newMessages: string[]) {
-    setMessages([...messages, ...newMessages]);
-  }
+  const [events, setEvents] = useState([] as Event[]);
 
   async function listUpcomingEvents() {
     const events = await getAllUpcomingEvents(props.calendarId);
 
-    const messagesToAdd = ['Upcoming events:'];
+    if(events){
+      setEvents(events);
+    }
+  }
 
-    if (!events || events.length  === 0) {
-      return [...messagesToAdd, 'No upcoming events found'];
+  function renderEvents() {
+    if (!events || events.length === 0) {
+      return (<span>No upcoming events found</span>);
     }
 
-    for (const event of events) {
+    return events.map(event => {
       let when = event.start?.dateTime;
       if (!when) {
         when = event.start?.date ?? 'unknown date';
       }
-      messagesToAdd.push(event.summary + ' (' + when + ')')
-    }
-
-    addMessages(messagesToAdd);
+      return (<div key={event.id}>{event.summary} ({ when })</div>);
+    });
   }
 
   if(loadedCalendar !== props.calendarId) {
@@ -41,7 +40,7 @@ export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId:
 
   return (
     <pre>
-      { messages.join('\n') }
+      { renderEvents() }
     </pre>
   )
 }
