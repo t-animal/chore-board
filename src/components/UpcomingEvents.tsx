@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { getAllUpcomingEvents } from "../lib/calendarApiFacade";
+import { markEventAsDone } from "../lib/eventLogic";
 
 type Event = gapi.client.calendar.Event;
 type UpcomingEventsProps = {
@@ -19,6 +20,11 @@ export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId:
     }
   }
 
+  async function eventDone(event: Event) {
+    await markEventAsDone(props.calendarId, event);
+    listUpcomingEvents();
+  }
+
   function renderEvents() {
     if (!events || events.length === 0) {
       return (<span>No upcoming events found</span>);
@@ -29,7 +35,13 @@ export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId:
       if (!when) {
         when = event.start?.date ?? 'unknown date';
       }
-      return (<div key={event.id}>{event.summary} ({ when })</div>);
+      return (
+        <div key={event.id}>
+          {event.summary} ({ when })
+          <button onClick={()=>eventDone(event)}>
+            modify
+          </button>
+        </div>);
     });
   }
 
