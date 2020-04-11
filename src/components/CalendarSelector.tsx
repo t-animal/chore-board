@@ -3,35 +3,35 @@ import { isUserSignedIn } from '../lib/authApiFacade';
 
 type CalendarListEntry = gapi.client.calendar.CalendarListEntry;
 type CalendarSelectedProps = {
-  newCalendarSelected: (calendarId: string) => void
+  newCalendarSelected: (calendarId: string) => void;
 }
 
-export default function CalendarSelector(props: CalendarSelectedProps) {
+export default function CalendarSelector(props: CalendarSelectedProps): JSX.Element {
 
   const [ calendars, setCalendars ] = useState<CalendarListEntry[]|null>(null);
 
-  function initCalendars() {
-    if(calendars === null && isUserSignedIn()) {
-      const updateCalendarsFromApi = () => {
+  function initCalendars(): void {
+    if (calendars === null && isUserSignedIn()) {
+      const updateCalendarsFromApi = (): void => {
         gapi.client.calendar.calendarList
           .list({})
           .then(({result}) => {
-            if(result.items) { setCalendars(result.items) }
+            if (result.items) { setCalendars(result.items); }
           });
       };
   
       gapi.client.calendar.calendarList
         .watch({})
-        .execute(updateCalendarsFromApi)
+        .execute(updateCalendarsFromApi);
     }
   }
 
-  function newCalendarSelected(event: ChangeEvent<HTMLSelectElement>) {
+  function newCalendarSelected(event: ChangeEvent<HTMLSelectElement>): void {
     props.newCalendarSelected(event.target.value);
   }
 
-  function render() {
-    if(calendars === null) {
+  function render(): JSX.Element {
+    if (calendars === null) {
       return <></>;
     }
 

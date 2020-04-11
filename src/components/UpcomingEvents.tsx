@@ -1,31 +1,31 @@
-import React, { useState } from "react";
-import { getAllUpcomingEvents } from "../lib/calendarApiFacade";
-import { markEventAsDone } from "../lib/eventLogic";
+import React, { useState } from 'react';
+import { getAllUpcomingEvents } from '../lib/calendarApiFacade';
+import { markEventAsDone } from '../lib/eventLogic';
 
 type Event = gapi.client.calendar.Event;
 type UpcomingEventsProps = {
-  calendarId: string
+  calendarId: string;
 };
 
-export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId: 'primary'}) {
+export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId: 'primary'}): JSX.Element {
 
   const [loadedCalendar, setLoadedCalendar] = useState<null | string>(null);
   const [events, setEvents] = useState([] as Event[]);
 
-  async function listUpcomingEvents() {
-    const events = await getAllUpcomingEvents(props.calendarId);
+  async function listUpcomingEvents(): Promise<void> {
+    const upcomingEvents = await getAllUpcomingEvents(props.calendarId);
 
-    if(events){
-      setEvents(events);
+    if (upcomingEvents) {
+      setEvents(upcomingEvents);
     }
   }
 
-  async function eventDone(event: Event) {
+  async function eventDone(event: Event): Promise<void> {
     await markEventAsDone(props.calendarId, event);
     listUpcomingEvents();
   }
 
-  function renderEvents() {
+  function renderEvents(): JSX.Element | JSX.Element[] {
     if (!events || events.length === 0) {
       return (<span>No upcoming events found</span>);
     }
@@ -38,14 +38,14 @@ export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId:
       return (
         <div key={event.id}>
           {event.summary} ({ when })
-          <button onClick={()=>eventDone(event)}>
+          <button onClick={ () => eventDone(event) }>
             modify
           </button>
         </div>);
     });
   }
 
-  if(loadedCalendar !== props.calendarId) {
+  if (loadedCalendar !== props.calendarId) {
     setLoadedCalendar(props.calendarId);
     listUpcomingEvents();
   }
@@ -54,5 +54,5 @@ export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId:
     <pre>
       { renderEvents() }
     </pre>
-  )
+  );
 }

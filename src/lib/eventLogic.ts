@@ -1,13 +1,13 @@
-import { Event, modifyEvent, EventPatch } from './calendarApiFacade';
+import { CalendarEvent, modifyEvent, EventPatch } from './calendarApiFacade';
 
-function getDoneDescription(description: string | undefined) {
-  if(description) {
+function getDoneDescription(description: string | undefined): string {
+  if (description) {
     return `Done with: ${description}`;
   }
-  return `Done.`
+  return `Done.`;
 }
 
-export function markEventAsDone(calendarId: string, event: Event) {
+export async function markEventAsDone(calendarId: string, event: CalendarEvent): Promise<void>{
   const eventPatch: EventPatch = {
     summary: `✔ ${event.summary}`,
     description: getDoneDescription(event.description),
@@ -20,5 +20,6 @@ export function markEventAsDone(calendarId: string, event: Event) {
     }
   };
 
-  return modifyEvent(calendarId, event, eventPatch);
+  await modifyEvent(calendarId, event, eventPatch);
+  return;
 }

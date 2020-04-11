@@ -8,16 +8,16 @@ import * as serviceWorker from './serviceWorker';
 
 import { initClient } from './lib/initGApiClient';
 
-const render = (appProps: Parameters<typeof App>[0]) => {
+const render = (appProps: Parameters<typeof App>[0]): void => {
   ReactDOM.render(
     <React.StrictMode>
       <App {...appProps}/>
     </React.StrictMode>,
     document.getElementById('root')
   );
-}
+};
 
-render({apiLoaded: false, signedIn: false})
+render({apiLoaded: false, signedIn: false});
 
 
 // If you want your app to work offline and load faster, you can change
@@ -30,8 +30,8 @@ serviceWorker.unregister();
  *  called from index.html
  *  eslint-disable-next-line @typescript-eslint/no-unused-vars
  */
-function handleClientLoad() {
+function handleClientLoad(): void {
   gapi.load('client:auth2', () => initClient(render));
 }
 
-(window as any).handleClientLoad = handleClientLoad;
+(window as typeof window & {handleClientLoad: () => void}).handleClientLoad = handleClientLoad;
