@@ -1,13 +1,32 @@
-body {
+html, body {
   background: #333;
-  color: #eee;
+  color: #ddd;
   display: flex;
+
+  width: 100%;
+  height: 100%;
+  margin: 0;
 }
 
 div#root {
   width: 100%;
   height: 100%;
   display: flex;
+}
+
+aside.config {
+  max-width: 250px;
+  border-right: 1px solid #ccc;
+  background-color: #222;
+  padding: 15px;
+}
+
+aside.config h3 {
+  margin-bottom: 0px;
+}
+
+h1, h3 {
+  color: white;
 }
 
 div.main-container {

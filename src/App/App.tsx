@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import './App.css';
-import CalendarSelector from '../components/CalendarSelector';
+import Configuration, { DefaultConfiguration } from '../components/Configuration';
 import { signOut, signIn } from '../lib/authApiFacade';
 import UpcomingEvents from '../components/UpcomingEvents';
 
 
 function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
 
-  const [calendarId, setCalendarId] = useState('primary');
+  const [config, setConfig] = useState(DefaultConfiguration);
 
   if (!props.apiLoaded) {
     return (
@@ -17,12 +17,12 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
 
   return (
     <>
-      <aside>
+      <aside className="config">
         {props.signedIn
           ? <button onClick={() => signOut()}>SignOut</button>
           : <button onClick={() => signIn()}>Auth</button> }
 
-        <CalendarSelector newCalendarSelected={setCalendarId}></CalendarSelector>
+        <Configuration configChanged={setConfig}></Configuration>
       </aside>
 
       <div className="main-container">
@@ -30,7 +30,7 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
           <h1>Chores</h1>
         </header>
         <main>
-          <UpcomingEvents calendarId={calendarId}></UpcomingEvents>
+          <UpcomingEvents calendarId={config.selectedCalendar}></UpcomingEvents>
         </main>
       </div>
     </>
