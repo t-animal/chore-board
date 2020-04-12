@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { markEventAsDone } from '../lib/eventLogic';
 import { getEventColor } from '../lib/colorApiFacade';
+import moment from 'moment';
 
 type Event = gapi.client.calendar.Event;
 type EventComponentProps = {
@@ -25,6 +26,15 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
     props.eventUpdated();
   }
 
+  function getDueDate(): string {
+    const dueString = event.start?.dateTime ?? event.start?.date;
+    if (dueString === null) {
+      return 'Unknown';
+    }
+
+    return moment(dueString).fromNow();
+  }
+
   return (
     <section
       className="event"
@@ -33,5 +43,6 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
     >
       <h2 className="event-title">{ event.summary }</h2>
       <span>{ event.description }</span>
+      <span>Due: { getDueDate() }</span>
     </section>);
 }
