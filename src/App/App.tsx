@@ -16,17 +16,24 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
   }
 
   return (
-    <div>
-      <header>
+    <>
+      <aside>
         {props.signedIn
           ? <button onClick={() => signOut()}>SignOut</button>
           : <button onClick={() => signIn()}>Auth</button> }
 
-        <UpcomingEvents calendarId={calendarId}></UpcomingEvents>
-
         <CalendarSelector newCalendarSelected={setCalendarId}></CalendarSelector>
-      </header>
-    </div>
+      </aside>
+
+      <div className="main-container">
+        <header>
+          <h1>Chores</h1>
+        </header>
+        <main>
+          <UpcomingEvents calendarId={calendarId}></UpcomingEvents>
+        </main>
+      </div>
+    </>
   );
 }
 

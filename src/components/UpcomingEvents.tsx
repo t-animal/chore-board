@@ -7,7 +7,7 @@ type UpcomingEventsProps = {
   calendarId: string;
 };
 
-export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId: 'primary'}): JSX.Element {
+export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId: 'primary'}): JSX.Element{
 
   const { calendarId } = props;
 
@@ -22,27 +22,21 @@ export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId:
     }
   }
 
-  function renderEvents(): JSX.Element | JSX.Element[] {
-    if (!events || events.length === 0) {
-      return (<span>No upcoming events found</span>);
-    }
-
-    return events.map(event =>
-      <EventComponent
-        key={event.id}
-        calendarId={calendarId}
-        event={event}
-        eventUpdated={listUpcomingEvents}></EventComponent>);
-  }
-
   if (loadedCalendar !== props.calendarId) {
     setLoadedCalendar(props.calendarId);
     listUpcomingEvents();
   }
 
-  return (
-    <pre>
-      { renderEvents() }
-    </pre>
-  );
+  if (!events || events.length === 0) {
+    return (<span>No upcoming events found</span>);
+  }
+
+  return (<> {
+    events.map(event =>
+      <EventComponent
+        key={event.id}
+        calendarId={calendarId}
+        event={event}
+        eventUpdated={listUpcomingEvents}></EventComponent>)
+  } </>);
 }
