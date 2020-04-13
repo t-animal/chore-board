@@ -1,31 +1,34 @@
 import React, { useState } from 'react';
 import { isUserSignedIn } from '../lib/authApiFacade';
+import { Configuration, DefaultConfiguration, storeConfig, loadConfig } from '../lib/storage';
 
 type CalendarListEntry = gapi.client.calendar.CalendarListEntry;
 type CalendarSelectedProps = {
   configChanged: (config: Configuration) => void;
 }
 
-type Configuration = {
-  selectedCalendar: string;
-  backlogTimeSpan: number;
-  cleanUpTimeSpan: number;
-}
-
-export const DefaultConfiguration: Configuration = {
-  selectedCalendar: 'primary',
-  backlogTimeSpan: 14,
-  cleanUpTimeSpan: 1
-};
-
-export default function Configuration(props: CalendarSelectedProps): JSX.Element {
+export default function ConfigurationComponent(props: CalendarSelectedProps): JSX.Element {
 
   const [ calendars, setCalendars ] = useState<CalendarListEntry[]|null>(null);
   const [ selectedCalendar, selectCalendar ] = useState<string>(DefaultConfiguration.selectedCalendar);
   const [ backlog, setBacklog ] = useState<number>(DefaultConfiguration.backlogTimeSpan);
   const [ cleanUp, setCleanUp ] = useState<number>(DefaultConfiguration.cleanUpTimeSpan);
+  const [ configLoaded, setConfigLoaded ] = useState<boolean>(false);
 
   React.useEffect(configChanged, [selectedCalendar, backlog, cleanUp]);
+
+  function initConfig(): void {
+    if (configLoaded) {
+      return;
+    }
+
+    const config = loadConfig();
+    selectCalendar(config.selectedCalendar);
+    setBacklog(config.backlogTimeSpan);
+    setCleanUp(config.cleanUpTimeSpan);
+
+    setConfigLoaded(true);
+  }
 
   function initCalendars(): void {
     if (calendars === null && isUserSignedIn()) {
@@ -44,11 +47,14 @@ export default function Configuration(props: CalendarSelectedProps): JSX.Element
   }
 
   function configChanged(): void {
-    props.configChanged({
+    const config: Configuration = {
       selectedCalendar,
       backlogTimeSpan: backlog,
       cleanUpTimeSpan: cleanUp
-    });
+    };
+
+    storeConfig(config);
+    props.configChanged(config);
   }
 
   function render(): JSX.Element {
@@ -61,13 +67,15 @@ export default function Configuration(props: CalendarSelectedProps): JSX.Element
         <section>
           <h3>Calendar</h3>
           Select the calendar to use: <br />
-          <select onChange={(event) => selectCalendar(event.target.value)}>
+          <select
+            onChange={(event) => selectCalendar(event.target.value)}
+            defaultValue={selectedCalendar}
+          >
             {
               calendars.map(cal =>
                 <option
                   key={cal.id}
                   value={cal.id}
-                  selected={cal.id === selectedCalendar}
                 >{cal.summary}</option>
               )
             }
@@ -117,6 +125,7 @@ export default function Configuration(props: CalendarSelectedProps): JSX.Element
   }
 
   initCalendars();
+  initConfig();
   return render();
 
 }

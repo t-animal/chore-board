@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import './App.css';
-import Configuration, { DefaultConfiguration } from '../components/Configuration';
+import ConfigurationComponent from '../components/Configuration';
 import { signOut, signIn } from '../lib/authApiFacade';
 import UpcomingEvents from '../components/UpcomingEvents';
+import { DefaultConfiguration } from '../lib/storage';
 
 
 function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
@@ -22,7 +23,7 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
           ? <button onClick={() => signOut()}>SignOut</button>
           : <button onClick={() => signIn()}>Auth</button> }
 
-        <Configuration configChanged={setConfig}></Configuration>
+        <ConfigurationComponent configChanged={setConfig}></ConfigurationComponent>
       </aside>
 
       <div className="main-container">
