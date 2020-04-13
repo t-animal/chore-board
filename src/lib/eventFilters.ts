@@ -1,17 +1,14 @@
 import { CalendarEvent } from './calendarApiFacade';
 import moment from 'moment';
+import { getStartMoment } from './eventLogic';
 
 export function getOverdueItemsFilter(backlogTimeSpan: number) {
   return (event: CalendarEvent): boolean => {
-    const startString = event.start?.dateTime ?? event.start?.date;
-    if (startString === null) {
+    const start = getStartMoment(event);
+    const now = moment(new Date());
+    if (start === null) {
       return false;
     }
-
-    const start = moment(startString);
-    const now = moment(new Date());
-
-    console.log(start.isBefore(now), start.diff(now, 'days'));
 
     return start.diff(now, 'days') > -backlogTimeSpan;
   };

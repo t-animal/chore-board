@@ -47,8 +47,24 @@ section.event {
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  box-shadow: 0px 0px 3px 0px #999;
+}
+
+section.event.overdue {
+  border: 2px solid red;
+  animation: overdue 1.5s infinite alternate ease-in-out;
 }
 
 section.event h2 {
   margin: 0px;
+}
+
+@keyframes overdue {
+  0% {
+    box-shadow: 0px 0px 12px 3px red;
+  }
+
+  100% {
+    box-shadow: 0px 0px 12px 6px red, inset 0px 0px 6px 2px red;
+  }
 }
