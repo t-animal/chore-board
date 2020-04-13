@@ -39,9 +39,9 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
             if (result.items) { setCalendars(result.items); }
           });
       };
-  
+
       gapi.client.calendar.calendarList
-        .watch({})
+        .list({})
         .execute(updateCalendarsFromApi);
     }
   }
