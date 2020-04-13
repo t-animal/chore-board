@@ -31,7 +31,7 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
           <h1>Chores</h1>
         </header>
         <main>
-          <UpcomingEvents calendarId={config.selectedCalendar}></UpcomingEvents>
+          <UpcomingEvents config={config}></UpcomingEvents>
         </main>
       </div>
     </>

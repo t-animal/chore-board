@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export type CalendarEvent = gapi.client.calendar.Event;
 export type EventPatch = Partial<CalendarEvent>;
 
@@ -7,10 +9,10 @@ type FixedPatchArg = OrigPatchArg & { resource: EventPatch };
 export async function getAllUpcomingEvents(calendarId: string): Promise<CalendarEvent[] | undefined> {
   const response = await gapi.client.calendar.events.list({
     calendarId,
-    'timeMin': (new Date()).toISOString(),
+    'timeMin': (moment().subtract(31, 'days')).toISOString(),
     'showDeleted': false,
     'singleEvents': true,
-    'maxResults': 10,
+    'maxResults': 200,
     'orderBy': 'startTime'
   });
 

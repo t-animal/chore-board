@@ -1,29 +1,31 @@
 import React, { useState } from 'react';
 import { getAllUpcomingEvents } from '../lib/calendarApiFacade';
 import { EventComponent } from './Event';
+import { Configuration } from '../lib/storage';
+import { getOverdueItemsFilter } from '../lib/eventFilters';
 
 type Event = gapi.client.calendar.Event;
 type UpcomingEventsProps = {
-  calendarId: string;
+  config: Configuration;
 };
 
-export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId: 'primary'}): JSX.Element{
+export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
 
-  const { calendarId } = props;
+  const { selectedCalendar: calendarId, backlogTimeSpan } = props.config;
 
   const [loadedCalendar, setLoadedCalendar] = useState<null | string>(null);
   const [events, setEvents] = useState([] as Event[]);
 
   async function listUpcomingEvents(): Promise<void> {
-    const upcomingEvents = await getAllUpcomingEvents(props.calendarId);
+    const upcomingEvents = await getAllUpcomingEvents(calendarId);
 
     if (upcomingEvents) {
       setEvents(upcomingEvents);
     }
   }
 
-  if (loadedCalendar !== props.calendarId) {
-    setLoadedCalendar(props.calendarId);
+  if (loadedCalendar !== calendarId) {
+    setLoadedCalendar(calendarId);
     listUpcomingEvents();
   }
 
@@ -32,11 +34,13 @@ export default function UpcomingEvents(props: UpcomingEventsProps = {calendarId:
   }
 
   return (<> {
-    events.map(event =>
-      <EventComponent
-        key={event.id}
-        calendarId={calendarId}
-        event={event}
-        eventUpdated={listUpcomingEvents}></EventComponent>)
+    events
+      .filter(getOverdueItemsFilter(backlogTimeSpan))
+      .map(event =>
+        <EventComponent
+          key={event.id}
+          calendarId={calendarId}
+          event={event}
+          eventUpdated={listUpcomingEvents}></EventComponent>)
   } </>);
 }
