@@ -16,9 +16,35 @@ div#root {
 
 aside.config {
   max-width: 250px;
+  padding: 15px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+aside.config .drawer-content-wrapper {
   border-right: 1px solid #ccc;
   background-color: #222;
-  padding: 15px;
+  max-width: calc(100% - 50px);
+  box-sizing: border-box;
+}
+
+aside.config .drawer-handle {
+  background: #ccc;
+  top: 15px;
+}
+
+aside.config .drawer-content {
+  padding: 0px;
+  transition: padding 200ms;
+}
+
+aside.config .drawer-open .drawer-content {
+  padding: 0px 10px;
+  transition: padding 200ms;
+}
+
+aside.config .drawer .drawer-mask {
+  opacity: 0.8;
 }
 
 aside.config h3 {
