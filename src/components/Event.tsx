@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { markEventAsDone, isEventOverdue, isEventDone } from '../lib/eventLogic';
+import { markEventAsDone, isEventOverdue, isEventDone, markEventAsUndone } from '../lib/eventLogic';
 import { getEventColor } from '../lib/colorApiFacade';
 import moment from 'moment';
 
@@ -21,8 +21,12 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
       .then(setColor);
   }
 
-  async function eventDone(): Promise<void> {
-    await markEventAsDone(props.calendarId, event);
+  async function eventClicked(): Promise<void> {
+    if (isEventDone(event)) {
+      await markEventAsUndone(props.calendarId, event);
+    } else {
+      await markEventAsDone(props.calendarId, event);
+    }
     props.eventUpdated();
   }
 
@@ -41,7 +45,7 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
         `event
         ${(isEventOverdue(event) && !isEventDone(event)) ? 'overdue' : ''}
         ${isEventDone(event) ? 'done' : ''}`}
-      onClick={ () => eventDone() }
+      onClick={ () => eventClicked() }
       style={{ color: color ?? 'none' }}
     >
       <h2 className="event-title">{ event.summary }</h2>

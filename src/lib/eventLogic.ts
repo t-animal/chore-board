@@ -2,28 +2,31 @@ import { CalendarEvent, modifyEvent, EventPatch } from './calendarApiFacade';
 import moment, { Moment } from 'moment';
 
 const DONE_MARK = '✔';
-
-function getDoneDescription(description: string | undefined): string {
-  if (description) {
-    return `Done with: ${description}`;
-  }
-  return `Done.`;
-}
+const DONE_DESCRIPTION_PREFILLED = 'Done with: ';
+const DONE_DESCRIPTION_EMPTY = 'Done.';
 
 export async function markEventAsDone(calendarId: string, event: CalendarEvent): Promise<void>{
   const eventPatch: EventPatch = {
     summary: `${DONE_MARK} ${event.summary}`,
     description: getDoneDescription(event.description),
-    extendedProperties: {
-      ...event.extendedProperties,
-      private: {
-        ...event.extendedProperties?.private,
-        markedAsDoneBy: 'ChoreBoard'
-      }
-    }
+    ...getExtendedProperties(event)
   };
 
   if (isEventDone(event)){
+    return;
+  }
+
+  await modifyEvent(calendarId, event, eventPatch);
+}
+
+export async function markEventAsUndone(calendarId: string, event: CalendarEvent): Promise<void>{
+  const eventPatch: EventPatch = {
+    summary: `${event.summary?.substr(2)}`,
+    description: removeDoneDescription(event.description),
+    ...getExtendedProperties(event)
+  };
+
+  if (!isEventDone(event)){
     return;
   }
 
@@ -54,4 +57,37 @@ export function getStartMoment(event: CalendarEvent): Moment | null {
   }
 
   return moment(startString);
+}
+
+
+function getDoneDescription(description: string | undefined): string {
+  if (description) {
+    return `${DONE_DESCRIPTION_PREFILLED} ${description}`;
+  }
+  return DONE_DESCRIPTION_EMPTY;
+}
+
+
+function removeDoneDescription(description: string | undefined): string | undefined {
+  if (description === undefined) {
+    return undefined;
+  }
+
+  if (description.startsWith(DONE_DESCRIPTION_PREFILLED)) {
+    return description.substr(DONE_DESCRIPTION_PREFILLED.length);
+  }
+
+  return description.substr(DONE_DESCRIPTION_EMPTY.length);
+}
+
+function getExtendedProperties(event: CalendarEvent) {
+  return {
+    extendedProperties: {
+      ...event.extendedProperties,
+      private: {
+        ...event.extendedProperties?.private,
+        donenessMarkedBy: 'ChoreBoard'
+      }
+    }
+  };
 }
