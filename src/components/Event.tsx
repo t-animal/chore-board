@@ -14,6 +14,7 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
   const { event } = props;
 
   const [ color, setColor ] = useState<string | null>(null);
+  const [ showSpinner, setShowSpinner ] = useState<boolean>(false);
 
   if (color === null && event.colorId) {
     getEventColor(event.colorId)
@@ -22,12 +23,14 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
   }
 
   async function eventClicked(): Promise<void> {
+    setShowSpinner(true);
     if (isEventDone(event)) {
       await markEventAsUndone(props.calendarId, event);
     } else {
       await markEventAsDone(props.calendarId, event);
     }
     props.eventUpdated();
+    setShowSpinner(false);
   }
 
   function getDueDate(): string {
@@ -51,5 +54,10 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
       <h2 className="event-title">{ event.summary }</h2>
       <span>{ event.description }</span>
       <span>Due: { getDueDate() }</span>
+      { showSpinner ?
+        <div className="loader-container">
+          <div className="loader">Loading...</div>
+        </div>
+        : '' }
     </section>);
 }

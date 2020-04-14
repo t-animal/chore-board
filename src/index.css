@@ -48,6 +48,7 @@ section.event {
   display: flex;
   flex-direction: column;
   box-shadow: 0px 0px 3px 0px #999;
+  position: relative;
 }
 
 section.event.overdue {
@@ -61,6 +62,24 @@ section.event.done {
 
 section.event h2 {
   margin: 0px;
+}
+
+section.event .loader-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(68, 68, 68, 0.3);
+  z-index: 3;
+}
+
+section.event .loader {
+  font-size: 4px;
+  position: absolute;
+  top: -20em;
+  left: 50%;
+  z-index: 4;
 }
 
 @keyframes overdue {
