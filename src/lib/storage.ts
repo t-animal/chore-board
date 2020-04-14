@@ -1,13 +1,15 @@
+export type CleanUpTime = 'immediately' | 'when-due';
+
 export type Configuration = {
   selectedCalendar: string;
   backlogTimeSpan: number;
-  cleanUpTimeSpan: number;
+  cleanUpTime: CleanUpTime;
 }
 
 export const DefaultConfiguration: Configuration = {
   selectedCalendar: 'primary',
   backlogTimeSpan: 14,
-  cleanUpTimeSpan: 1
+  cleanUpTime: 'when-due'
 };
 
 export function storeConfig(config: Configuration): void {

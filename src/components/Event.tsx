@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { markEventAsDone, isEventOverdue } from '../lib/eventLogic';
+import { markEventAsDone, isEventOverdue, isEventDone } from '../lib/eventLogic';
 import { getEventColor } from '../lib/colorApiFacade';
 import moment from 'moment';
 
@@ -37,7 +37,10 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
 
   return (
     <section
-      className={`event ${isEventOverdue(event) ? 'overdue' : ''}`}
+      className={
+        `event
+        ${(isEventOverdue(event) && !isEventDone(event)) ? 'overdue' : ''}
+        ${isEventDone(event) ? 'done' : ''}`}
       onClick={ () => eventDone() }
       style={{ color: color ?? 'none' }}
     >

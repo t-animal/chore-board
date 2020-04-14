@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { getAllUpcomingEvents } from '../lib/calendarApiFacade';
 import { EventComponent } from './Event';
 import { Configuration } from '../lib/storage';
-import { getOverdueItemsFilter } from '../lib/eventFilters';
+import { getOverdueItemsFilter, getDoneItemsFilter } from '../lib/eventFilters';
 
 type Event = gapi.client.calendar.Event;
 type UpcomingEventsProps = {
@@ -36,6 +36,7 @@ export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
   return (<> {
     events
       .filter(getOverdueItemsFilter(backlogTimeSpan))
+      .filter(getDoneItemsFilter(props.config.cleanUpTime))
       .map(event =>
         <EventComponent
           key={event.id}

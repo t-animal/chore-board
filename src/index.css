@@ -37,7 +37,7 @@ div.main-container {
 }
 
 section.event {
-  border: 1px solid #ccc;
+  border: 2px solid #ccc;
   border-radius: 3px;
   margin: 5px;
   max-width: 400px;
@@ -53,6 +53,10 @@ section.event {
 section.event.overdue {
   border: 2px solid red;
   animation: overdue 1.5s infinite alternate ease-in-out;
+}
+
+section.event.done {
+  opacity: 0.5;
 }
 
 section.event h2 {

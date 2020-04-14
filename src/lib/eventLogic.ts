@@ -1,6 +1,8 @@
 import { CalendarEvent, modifyEvent, EventPatch } from './calendarApiFacade';
 import moment, { Moment } from 'moment';
 
+const DONE_MARK = '✔';
+
 function getDoneDescription(description: string | undefined): string {
   if (description) {
     return `Done with: ${description}`;
@@ -10,7 +12,7 @@ function getDoneDescription(description: string | undefined): string {
 
 export async function markEventAsDone(calendarId: string, event: CalendarEvent): Promise<void>{
   const eventPatch: EventPatch = {
-    summary: `✔ ${event.summary}`,
+    summary: `${DONE_MARK} ${event.summary}`,
     description: getDoneDescription(event.description),
     extendedProperties: {
       ...event.extendedProperties,
@@ -21,8 +23,17 @@ export async function markEventAsDone(calendarId: string, event: CalendarEvent):
     }
   };
 
+  if (isEventDone(event)){
+    return;
+  }
+
   await modifyEvent(calendarId, event, eventPatch);
-  return;
+}
+
+export function isEventDone(event: CalendarEvent): boolean {
+  const isDone = event.summary?.startsWith(DONE_MARK) || event.description?.startsWith('Done');
+
+  return isDone ?? false;
 }
 
 export function isEventOverdue(event: CalendarEvent): boolean {

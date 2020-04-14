@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { isUserSignedIn } from '../lib/authApiFacade';
-import { Configuration, DefaultConfiguration, storeConfig, loadConfig } from '../lib/storage';
+import { CleanUpTime, Configuration, DefaultConfiguration, storeConfig, loadConfig } from '../lib/storage';
 
 type CalendarListEntry = gapi.client.calendar.CalendarListEntry;
 type CalendarSelectedProps = {
@@ -12,7 +12,7 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
   const [ calendars, setCalendars ] = useState<CalendarListEntry[]|null>(null);
   const [ selectedCalendar, selectCalendar ] = useState<string>(DefaultConfiguration.selectedCalendar);
   const [ backlog, setBacklog ] = useState<number>(DefaultConfiguration.backlogTimeSpan);
-  const [ cleanUp, setCleanUp ] = useState<number>(DefaultConfiguration.cleanUpTimeSpan);
+  const [ cleanUp, setCleanUp ] = useState<CleanUpTime>(DefaultConfiguration.cleanUpTime);
   const [ configLoaded, setConfigLoaded ] = useState<boolean>(false);
 
   React.useEffect(configChanged, [selectedCalendar, backlog, cleanUp]);
@@ -25,7 +25,7 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
     const config = loadConfig();
     selectCalendar(config.selectedCalendar);
     setBacklog(config.backlogTimeSpan);
-    setCleanUp(config.cleanUpTimeSpan);
+    setCleanUp(config.cleanUpTime);
 
     setConfigLoaded(true);
   }
@@ -50,7 +50,7 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
     const config: Configuration = {
       selectedCalendar,
       backlogTimeSpan: backlog,
-      cleanUpTimeSpan: cleanUp
+      cleanUpTime: cleanUp
     };
 
     storeConfig(config);
@@ -96,24 +96,24 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
 
         <section>
           <h3>Clean-Up</h3>
-          Remove completed items:<br />
+          Hide completed items:<br />
           <label>
             <input
               type="radio"
               name="clean-up"
               value="1"
-              onChange={() => setCleanUp(1)}
-              checked={cleanUp === 1}
+              onChange={() => setCleanUp('when-due')}
+              checked={cleanUp === 'when-due'}
             />
-            On the next day
+            The day after they&apos;re due
           </label><br/>
           <label>
             <input
               type="radio"
               name="clean-up"
               value="0"
-              onChange={() => setCleanUp(0)}
-              checked={cleanUp === 0}
+              onChange={() => setCleanUp('immediately')}
+              checked={cleanUp === 'immediately'}
             />
             Immediately
           </label><br/>
