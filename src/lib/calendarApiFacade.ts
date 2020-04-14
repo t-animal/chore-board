@@ -10,6 +10,7 @@ export async function getAllUpcomingEvents(calendarId: string): Promise<Calendar
   const response = await gapi.client.calendar.events.list({
     calendarId,
     'timeMin': (moment().subtract(31, 'days')).toISOString(),
+    'timeMax': (moment().add(31, 'days')).toISOString(),
     'showDeleted': false,
     'singleEvents': true,
     'maxResults': 200,
