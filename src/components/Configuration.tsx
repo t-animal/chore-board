@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { isUserSignedIn } from '../lib/authApiFacade';
 import { CleanUpTime, Configuration, DefaultConfiguration, storeConfig, loadConfig } from '../lib/storage';
 
+import '../range.css';
+
 type CalendarListEntry = gapi.client.calendar.CalendarListEntry;
 type CalendarSelectedProps = {
   configChanged: (config: Configuration) => void;
