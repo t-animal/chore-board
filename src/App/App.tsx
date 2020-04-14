@@ -4,9 +4,9 @@ import Drawer from 'rc-drawer';
 import './App.css';
 import 'rc-drawer/assets/index.css';
 import ConfigurationComponent from '../components/Configuration';
-import { signOut, signIn } from '../lib/authApiFacade';
 import UpcomingEvents from '../components/UpcomingEvents';
 import { DefaultConfiguration } from '../lib/storage';
+import { AuthButton } from '../components/AuthButton';
 
 
 function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
@@ -24,11 +24,9 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
     <>
       <aside className="config" ref={sidebarRef}>
         <Drawer getContainer={sidebarRef.current}>
-          {props.signedIn
-            ? <button onClick={() => signOut()}>SignOut</button>
-            : <button onClick={() => signIn()}>Auth</button> }
 
           <ConfigurationComponent configChanged={setConfig}></ConfigurationComponent>
+          <AuthButton signedIn={props.signedIn}></AuthButton>
         </Drawer>
       </aside>
 
@@ -36,9 +34,10 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
         <header>
           <h1>Chores</h1>
         </header>
-        <main>
-          <UpcomingEvents config={config}></UpcomingEvents>
-        </main>
+
+        { props.signedIn
+          ? <main><UpcomingEvents config={config}></UpcomingEvents></main>
+          : <AuthButton signedIn={props.signedIn}></AuthButton> }
       </div>
     </>
   );
