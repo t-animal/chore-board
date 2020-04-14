@@ -53,7 +53,7 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
     >
       <h2 className="event-title">{ event.summary }</h2>
       <span>{ event.description }</span>
-      <span>Due: { getDueDate() }</span>
+      { !isEventDone(event) ? <span>Due: { getDueDate() }</span> : '' }
       { showSpinner ?
         <div className="loader-container">
           <div className="loader">Loading...</div>
