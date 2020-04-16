@@ -5,7 +5,6 @@ import './index.css';
 import './spinner.css';
 
 import App from './components/App/App';
-import * as serviceWorker from './serviceWorker';
 
 import { initClient } from './lib/initGApiClient';
 
@@ -19,12 +18,6 @@ const render = (appProps: Parameters<typeof App>[0]): void => {
 };
 
 render({apiLoaded: false, signedIn: false});
-
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
 
 /**
  *  On load, called to load the auth2 library and API client library.
