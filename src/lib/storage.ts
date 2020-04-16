@@ -1,10 +1,4 @@
-export type CleanUpTime = 'immediately' | 'when-due';
-
-export type Configuration = {
-  selectedCalendar: string;
-  backlogTimeSpan: number;
-  cleanUpTime: CleanUpTime;
-}
+import { Configuration } from '../typings/configuration';
 
 export const DefaultConfiguration: Configuration = {
   selectedCalendar: 'primary',

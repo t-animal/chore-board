@@ -1,7 +1,7 @@
 import { CalendarEvent } from './calendarApiFacade';
 import moment from 'moment';
 import { getStartMoment, isEventDone } from './eventLogic';
-import { CleanUpTime } from './storage';
+import { CleanUpTime } from '../typings/configuration';
 
 export function getOverdueItemsFilter(backlogTimeSpan: number) {
   return (event: CalendarEvent): boolean => {

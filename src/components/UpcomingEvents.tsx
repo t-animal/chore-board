@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { getAllUpcomingEvents } from '../lib/calendarApiFacade';
 import { EventComponent } from './Event';
-import { Configuration } from '../lib/storage';
 import { getOverdueItemsFilter, getDoneItemsFilter } from '../lib/eventFilters';
+import { Configuration } from '../typings/configuration';
 
 type Event = gapi.client.calendar.Event;
 type UpcomingEventsProps = {

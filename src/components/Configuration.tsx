@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { isUserSignedIn } from '../lib/authApiFacade';
-import { CleanUpTime, Configuration, DefaultConfiguration, storeConfig, loadConfig } from '../lib/storage';
+import { DefaultConfiguration, storeConfig, loadConfig } from '../lib/storage';
+import { CleanUpTime, Configuration } from '../typings/configuration';
 
 import '../range.css';
 
