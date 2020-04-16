@@ -88,7 +88,7 @@ section.event {
   border: 2px solid #ccc;
   border-radius: 3px;
   margin: 5px;
-  max-width: 400px;
+  max-width: 250px;
   padding: 5px;
   background: #444;
   min-width: 200px;
@@ -143,6 +143,15 @@ section.event .loader {
 
 
 @media only screen and (min-width: 600px){
+  main {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-around;
+    grid-column-gap: 0px;
+  }
+}
+
+@media only screen and (min-width: 800px){
   main {
     display: grid;
     grid-template-columns: auto auto auto;
