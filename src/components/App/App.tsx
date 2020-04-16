@@ -3,10 +3,10 @@ import Drawer from 'rc-drawer';
 
 import './App.css';
 import 'rc-drawer/assets/index.css';
-import ConfigurationComponent from '../components/Configuration';
-import UpcomingEvents from '../components/UpcomingEvents';
-import { DefaultConfiguration } from '../lib/storage';
-import { AuthButton } from '../components/AuthButton';
+import ConfigurationComponent from '../Configuration';
+import UpcomingEvents from '../UpcomingEvents';
+import { DefaultConfiguration } from '../../lib/storage';
+import { AuthButton } from '../AuthButton';
 
 
 function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {

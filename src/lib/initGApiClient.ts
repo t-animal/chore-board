@@ -1,5 +1,5 @@
 import { CLIENT_ID } from '../api-keys';
-import App from '../App/App';
+import App from '../components/App/App';
 import { isUserSignedIn } from './authApiFacade';
 
 // Array of API discovery doc URLs for APIs used by the quickstart

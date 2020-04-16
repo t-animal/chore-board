@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import './spinner.css';
 
-import App from './App/App';
+import App from './components/App/App';
 import * as serviceWorker from './serviceWorker';
 
 import { initClient } from './lib/initGApiClient';
