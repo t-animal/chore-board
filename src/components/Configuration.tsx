@@ -4,6 +4,7 @@ import { DefaultConfiguration, storeConfig, loadConfig } from '../lib/storage';
 import { CleanUpTime, Configuration } from '../typings/configuration';
 
 import '../range.css';
+import { getAllAvailableCalendars } from '../lib/calendarApiFacade';
 
 type CalendarListEntry = gapi.client.calendar.CalendarListEntry;
 type CalendarSelectedProps = {
@@ -33,19 +34,14 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
     setConfigLoaded(true);
   }
 
-  function initCalendars(): void {
-    if (calendars === null && isUserSignedIn()) {
-      const updateCalendarsFromApi = (): void => {
-        gapi.client.calendar.calendarList
-          .list({})
-          .then(({result}) => {
-            if (result.items) { setCalendars(result.items); }
-          });
-      };
+  async function initCalendars(): Promise<void> {
+    if (calendars !== null || !isUserSignedIn()) {
+      return;
+    }
 
-      gapi.client.calendar.calendarList
-        .list({})
-        .execute(updateCalendarsFromApi);
+    const response = await getAllAvailableCalendars();
+    if (response.result.items) {
+      setCalendars(response.result.items);
     }
   }
 

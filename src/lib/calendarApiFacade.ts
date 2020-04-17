@@ -1,10 +1,20 @@
 import moment from 'moment';
 
+export type CalendarList = gapi.client.calendar.CalendarList;
 export type CalendarEvent = gapi.client.calendar.Event;
 export type EventPatch = Partial<CalendarEvent>;
 
 type OrigPatchArg = Parameters<typeof gapi.client.calendar.events.patch>[0];
 type FixedPatchArg = OrigPatchArg & { resource: EventPatch };
+
+export function getAllAvailableCalendars(): Promise<gapi.client.Response<CalendarList>> {
+  return new Promise((resolve, reject) => {
+    gapi.client.calendar.calendarList
+      .list({})
+      .then(resolve, reject);
+  });
+}
+
 
 export async function getAllUpcomingEvents(calendarId: string): Promise<CalendarEvent[] | undefined> {
   const response = await gapi.client.calendar.events.list({
