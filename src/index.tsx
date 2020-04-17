@@ -7,11 +7,15 @@ import './spinner.css';
 import App from './components/App/App';
 
 import { initClient } from './lib/initGApiClient';
+import { ConfigurationProvider } from './components/ConfigurationContext';
 
 const render = (appProps: Parameters<typeof App>[0]): void => {
+
   ReactDOM.render(
     <React.StrictMode>
-      <App {...appProps}/>
+      <ConfigurationProvider>
+        <App {...appProps}/>
+      </ConfigurationProvider>
     </React.StrictMode>,
     document.getElementById('root')
   );

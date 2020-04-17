@@ -1,38 +1,15 @@
 import React, { useState } from 'react';
 import { isUserSignedIn } from '../lib/authApiFacade';
-import { DefaultConfiguration, storeConfig, loadConfig } from '../lib/storage';
-import { CleanUpTime, Configuration } from '../typings/configuration';
 
 import '../range.css';
 import { getAllAvailableCalendars } from '../lib/calendarApiFacade';
+import { ConfigurationConsumer, ConfigurationContext } from './ConfigurationContext';
 
 type CalendarListEntry = gapi.client.calendar.CalendarListEntry;
-type CalendarSelectedProps = {
-  configChanged: (config: Configuration) => void;
-}
 
-export default function ConfigurationComponent(props: CalendarSelectedProps): JSX.Element {
+export default function ConfigurationComponent(): JSX.Element {
 
   const [ calendars, setCalendars ] = useState<CalendarListEntry[]|null>(null);
-  const [ selectedCalendar, selectCalendar ] = useState<string>(DefaultConfiguration.selectedCalendar);
-  const [ backlog, setBacklog ] = useState<number>(DefaultConfiguration.backlogTimeSpan);
-  const [ cleanUp, setCleanUp ] = useState<CleanUpTime>(DefaultConfiguration.cleanUpTime);
-  const [ configLoaded, setConfigLoaded ] = useState<boolean>(false);
-
-  React.useEffect(configChanged, [selectedCalendar, backlog, cleanUp]);
-
-  function initConfig(): void {
-    if (configLoaded) {
-      return;
-    }
-
-    const config = loadConfig();
-    selectCalendar(config.selectedCalendar);
-    setBacklog(config.backlogTimeSpan);
-    setCleanUp(config.cleanUpTime);
-
-    setConfigLoaded(true);
-  }
 
   async function initCalendars(): Promise<void> {
     if (calendars !== null || !isUserSignedIn()) {
@@ -45,29 +22,23 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
     }
   }
 
-  function configChanged(): void {
-    const config: Configuration = {
-      selectedCalendar,
-      backlogTimeSpan: backlog,
-      cleanUpTime: cleanUp
-    };
+  initCalendars();
 
-    storeConfig(config);
-    props.configChanged(config);
+  if (calendars === null) {
+    return <></>;
   }
 
-  function render(): JSX.Element {
-    if (calendars === null) {
-      return <></>;
-    }
+  return (
+    <ConfigurationConsumer>{(context: ConfigurationContext) => {
+      const {selectedCalendar, backlogTimeSpan, cleanUpTime} = context.config;
+      const {setBacklogTimeSpan, setCleanUpTime, setCalendar} = context.mutators;
 
-    return (
-      <>
+      return (<>
         <section>
           <h3>Calendar</h3>
           Select the calendar to use: <br />
           <select
-            onChange={(event) => selectCalendar(event.target.value)}
+            onChange={(event) => setCalendar(event.target.value)}
             defaultValue={selectedCalendar}
           >
             {
@@ -88,9 +59,9 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
             type="range"
             min="0"
             max="31"
-            onChange={(event) => setBacklog(event.target.valueAsNumber)}
-            value={backlog} />
-          {(backlog + '').padStart(2, '0')} days
+            onChange={(event) => setBacklogTimeSpan(event.target.valueAsNumber)}
+            value={backlogTimeSpan} />
+          {(backlogTimeSpan + '').padStart(2, '0')} days
         </section>
 
         <section>
@@ -101,8 +72,8 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
               type="radio"
               name="clean-up"
               value="1"
-              onChange={() => setCleanUp('when-due')}
-              checked={cleanUp === 'when-due'}
+              onChange={() => setCleanUpTime('when-due')}
+              checked={cleanUpTime === 'when-due'}
             />
             The day after they&apos;re due
           </label><br/>
@@ -111,20 +82,13 @@ export default function ConfigurationComponent(props: CalendarSelectedProps): JS
               type="radio"
               name="clean-up"
               value="0"
-              onChange={() => setCleanUp('immediately')}
-              checked={cleanUp === 'immediately'}
+              onChange={() => setCleanUpTime('immediately')}
+              checked={cleanUpTime === 'immediately'}
             />
             Immediately
           </label><br/>
         </section>
-
-
-      </>
-    );
-  }
-
-  initCalendars();
-  initConfig();
-  return render();
-
+      </>);
+    }}</ConfigurationConsumer>
+  );
 }
