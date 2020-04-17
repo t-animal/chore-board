@@ -5,32 +5,12 @@ const DONE_MARK = '✔';
 const DONE_DESCRIPTION_PREFILLED = 'Done with: ';
 const DONE_DESCRIPTION_EMPTY = 'Done.';
 
-export async function markEventAsDone(calendarId: string, event: CalendarEvent): Promise<void>{
-  const eventPatch: EventPatch = {
-    summary: `${DONE_MARK} ${event.summary}`,
-    description: getDoneDescription(event.description),
-    ...getExtendedProperties(event)
-  };
-
-  if (isEventDone(event)){
-    return;
+export async function toggleEventDoneness(calendarId: string, event: CalendarEvent): Promise<void> {
+  if (isEventDone(event)) {
+    await markEventAsUndone(calendarId, event);
+  } else {
+    await markEventAsDone(calendarId, event);
   }
-
-  await modifyEvent(calendarId, event, eventPatch);
-}
-
-export async function markEventAsUndone(calendarId: string, event: CalendarEvent): Promise<void>{
-  const eventPatch: EventPatch = {
-    summary: `${event.summary?.substr(2)}`,
-    description: removeDoneDescription(event.description),
-    ...getExtendedProperties(event)
-  };
-
-  if (!isEventDone(event)){
-    return;
-  }
-
-  await modifyEvent(calendarId, event, eventPatch);
 }
 
 export function isEventDone(event: CalendarEvent): boolean {
@@ -59,6 +39,33 @@ export function getStartMoment(event: CalendarEvent): Moment | null {
   return moment(startString);
 }
 
+async function markEventAsDone(calendarId: string, event: CalendarEvent): Promise<void>{
+  const eventPatch: EventPatch = {
+    summary: `${DONE_MARK} ${event.summary}`,
+    description: getDoneDescription(event.description),
+    ...getExtendedProperties(event)
+  };
+
+  if (isEventDone(event)){
+    return;
+  }
+
+  await modifyEvent(calendarId, event, eventPatch);
+}
+
+async function markEventAsUndone(calendarId: string, event: CalendarEvent): Promise<void>{
+  const eventPatch: EventPatch = {
+    summary: `${event.summary?.substr(2)}`,
+    description: removeDoneDescription(event.description),
+    ...getExtendedProperties(event)
+  };
+
+  if (!isEventDone(event)){
+    return;
+  }
+
+  await modifyEvent(calendarId, event, eventPatch);
+}
 
 function getDoneDescription(description: string | undefined): string {
   if (description) {
@@ -80,7 +87,7 @@ function removeDoneDescription(description: string | undefined): string | undefi
   return description.substr(DONE_DESCRIPTION_EMPTY.length);
 }
 
-function getExtendedProperties(event: CalendarEvent) {
+function getExtendedProperties(event: CalendarEvent): Pick<CalendarEvent, 'extendedProperties'> {
   return {
     extendedProperties: {
       ...event.extendedProperties,

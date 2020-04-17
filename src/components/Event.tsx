@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { markEventAsDone, isEventOverdue, isEventDone, markEventAsUndone } from '../lib/eventLogic';
+import { isEventOverdue, isEventDone, toggleEventDoneness } from '../lib/eventLogic';
 import { getEventColor } from '../lib/colorApiFacade';
 import moment from 'moment';
 
@@ -24,11 +24,7 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
 
   async function eventClicked(): Promise<void> {
     setShowSpinner(true);
-    if (isEventDone(event)) {
-      await markEventAsUndone(props.calendarId, event);
-    } else {
-      await markEventAsDone(props.calendarId, event);
-    }
+    await toggleEventDoneness(props.calendarId, event);
     props.eventUpdated();
     setShowSpinner(false);
   }
