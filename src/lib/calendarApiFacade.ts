@@ -17,17 +17,32 @@ export function getAllAvailableCalendars(): Promise<gapi.client.Response<Calenda
 
 
 export async function getAllUpcomingEvents(calendarId: string): Promise<CalendarEvent[] | undefined> {
-  const response = await gapi.client.calendar.events.list({
+  const passed = gapi.client.calendar.events.list({
     calendarId,
     'timeMin': (moment().subtract(31, 'days')).toISOString(),
-    'timeMax': (moment().add(31, 'days')).toISOString(),
+    'timeMax': moment().toISOString(),
     'showDeleted': false,
     'singleEvents': true,
-    'maxResults': 200,
+    'orderBy': 'startTime'
+  });
+  const future = gapi.client.calendar.events.list({
+    calendarId,
+    'timeMin': moment().toISOString(),
+    'timeMax': (moment().add(7, 'months')).toISOString(),
+    'showDeleted': false,
+    'singleEvents': true,
+    'maxResults': 80,
     'orderBy': 'startTime'
   });
 
-  return response.result.items;
+  const allResponses = await Promise.all([passed, future]);
+  const allEvents2d = allResponses.map(response => response.result.items);
+
+  if (allEvents2d.some(element => element === undefined)) {
+    return undefined;
+  }
+
+  return allEvents2d.flat();
 }
 
 export function modifyEvent(calendarId: string, event: CalendarEvent, patch: EventPatch): Promise<gapi.client.Response<CalendarEvent>> {
