@@ -1,17 +1,14 @@
 import React from 'react';
-import Drawer from 'rc-drawer';
 
 import './App.css';
 import 'rc-drawer/assets/index.css';
-import ConfigurationComponent from '../Configuration';
 import UpcomingEvents from '../UpcomingEvents';
 import { AuthButton } from '../AuthButton';
 import { ConfigurationConsumer } from '../ConfigurationContext';
-
+import { Sidebar } from '../Sidebar';
 
 function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
 
-  const sidebarRef = React.createRef<HTMLElement>();
 
   if (!props.apiLoaded) {
     return (
@@ -21,21 +18,7 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
 
   return (
     <>
-      <aside className="config" ref={sidebarRef}>
-        <Drawer getContainer={sidebarRef.current}>
-
-          <ConfigurationComponent></ConfigurationComponent>
-          <section>
-            <AuthButton signedIn={props.signedIn}></AuthButton>
-          </section>
-
-          <footer>
-            Fork me on <a href="https://github.com/t-animal/chore-board">Github</a>.<br />
-            Favicon based on artwork licensed CC-BY
-            by <a href="https://thenounproject.com/term/cleaning/1944288/">monkik</a>.
-          </footer>
-        </Drawer>
-      </aside>
+      <Sidebar signedIn={props.signedIn}/>
 
       <div className="main-container">
         <header>
