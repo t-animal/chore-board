@@ -25,11 +25,7 @@ export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
 
     try {
       const upcomingEvents = await getAllUpcomingEvents(selectedCalendar);
-
-      if (upcomingEvents) {
-        setEvents(upcomingEvents);
-      }
-
+      setEvents(upcomingEvents ?? []);
     } catch (e) {
       props.loadingCalendarsFailed(e);
     }
