@@ -11,7 +11,7 @@ const defaultContext = {
   mutators: {
     setBacklogTimeSpan: (days: number) => { },
     setCleanUpTime: (time: CleanUpTime) => { },
-    setCalendar: (calendarId: string) => { }
+    setCalendar: (calendarId: string | null) => { }
   }
 };
 /* eslint-enable @typescript-eslint/no-unused-vars */
@@ -37,7 +37,7 @@ export const ConfigurationProvider = (props: Props<void>): JSX.Element => {
       contextState.config.cleanUpTime = time;
       storeAndRerender();
     },
-    setCalendar: (calendarId: string): void => {
+    setCalendar: (calendarId: string | null): void => {
       contextState.config.selectedCalendar = calendarId;
       storeAndRerender();
     }

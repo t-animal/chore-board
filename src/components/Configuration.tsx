@@ -1,55 +1,20 @@
-import React, { useState } from 'react';
-import { isUserSignedIn } from '../lib/authApiFacade';
+import React from 'react';
 
 import '../range.css';
-import { getAllAvailableCalendars } from '../lib/calendarApiFacade';
 import { ConfigurationConsumer, ConfigurationContext } from './ConfigurationContext';
+import { CalendarSelector } from './CalendarSelector';
 
-type CalendarListEntry = gapi.client.calendar.CalendarListEntry;
 
 export default function ConfigurationComponent(): JSX.Element {
-
-  const [ calendars, setCalendars ] = useState<CalendarListEntry[]|null>(null);
-
-  async function initCalendars(): Promise<void> {
-    if (calendars !== null || !isUserSignedIn()) {
-      return;
-    }
-
-    const response = await getAllAvailableCalendars();
-    if (response.result.items) {
-      setCalendars(response.result.items);
-    }
-  }
-
-  initCalendars();
-
-  if (calendars === null) {
-    return <></>;
-  }
-
   return (
     <ConfigurationConsumer>{(context: ConfigurationContext) => {
-      const {selectedCalendar, backlogTimeSpan, cleanUpTime} = context.config;
-      const {setBacklogTimeSpan, setCleanUpTime, setCalendar} = context.mutators;
+      const {backlogTimeSpan, cleanUpTime} = context.config;
+      const {setBacklogTimeSpan, setCleanUpTime} = context.mutators;
 
       return (<>
         <section>
           <h3>Calendar</h3>
-          Select the calendar to use: <br />
-          <select
-            onChange={(event) => setCalendar(event.target.value)}
-            defaultValue={selectedCalendar}
-          >
-            {
-              calendars.map(cal =>
-                <option
-                  key={cal.id}
-                  value={cal.id}
-                >{cal.summary}</option>
-              )
-            }
-          </select>
+          <CalendarSelector />
         </section>
 
         <section>

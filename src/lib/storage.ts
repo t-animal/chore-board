@@ -1,7 +1,7 @@
 import { Configuration } from '../typings/configuration';
 
 export const DefaultConfiguration: Configuration = {
-  selectedCalendar: 'primary',
+  selectedCalendar: null,
   backlogTimeSpan: 14,
   cleanUpTime: 'when-due'
 };
