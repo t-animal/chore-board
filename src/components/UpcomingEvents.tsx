@@ -35,20 +35,15 @@ export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
     } catch (e) {
       props.loadingCalendarsFailed(e);
     }
-
   }
 
-  if (selectedCalendar !== null && loadedCalendar !== selectedCalendar) {
+  if (selectedCalendar === null) {
+    return (<></>);
+  }
+
+  if (loadedCalendar !== selectedCalendar) {
     listUpcomingEvents();
     setLoadedCalendar(selectedCalendar);
-  }
-
-  if (selectedCalendar === null ) {
-    return (<div>
-      <p>Please select a calendar. You can change your selection at any time in the sidebar.<br />
-      It is recommended to create a dedicated calendar e.g. named &quot;Chores&quot;.</p>
-      <CalendarSelector />
-    </div>);
   }
 
   if (!events || events.length === 0) {
@@ -79,12 +74,12 @@ export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
           event={event}
           eventUpdated={listUpcomingEvents}></EventComponent>);
 
-  return (<>
+  return (<main>
     { renderEvents(imminentEvents) }
     <div className="divider">Soon: </div>
     { renderEvents(soonEvents) }
     <div className="divider">Distant: </div>
     { renderEvents(distantEvents) }
-  </>);
+  </main>);
 
 }

@@ -6,6 +6,7 @@ import UpcomingEvents from '../UpcomingEvents';
 import { AuthButton } from '../AuthButton';
 import { ConfigurationConsumer } from '../ConfigurationContext';
 import { Sidebar } from '../Sidebar';
+import { SelectOrCreateCalendar } from '../SelectOrCreateCalendar';
 
 function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
 
@@ -36,9 +37,15 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
               }
             };
 
-            return (props.signedIn
-              ? <main><UpcomingEvents config={context.config} loadingCalendarsFailed={errorHandler}></UpcomingEvents></main>
-              : <AuthButton signedIn={props.signedIn}></AuthButton>);
+            if (!props.signedIn) {
+              return <AuthButton signedIn={props.signedIn} />;
+            }
+
+            if (context.config.selectedCalendar === null) {
+              return <SelectOrCreateCalendar />;
+            }
+
+            return <UpcomingEvents config={context.config} loadingCalendarsFailed={errorHandler} />;
           }}
         </ConfigurationConsumer>
       </div>
