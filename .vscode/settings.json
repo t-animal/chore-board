@@ -1,6 +1,8 @@
 {
     "cSpell.words": [
-        "gapi"
+        "Rerender",
+        "gapi",
+        "mutators"
     ],
     "editor.tabSize": 2,
     "editor.codeActionsOnSave": {
