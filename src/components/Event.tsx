@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { isEventOverdue, isEventDone, toggleEventDoneness, getStartMoment } from '../lib/eventLogic';
+import { isEventOverdue, isEventDone, toggleEventDoneness, getStartMoment, daysFromNow } from '../lib/eventLogic';
 import { getEventColor } from '../lib/colorApiFacade';
-import moment from 'moment';
 
 type Event = gapi.client.calendar.Event;
 type EventComponentProps = {
@@ -38,15 +37,6 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
     return start.fromNow();
   }
 
-  function daysFromNow(): number {
-    const start = getStartMoment(event);
-    if (start === null || isEventOverdue(event)) {
-      return 0;
-    }
-
-    return start.diff(moment(), 'days');
-  }
-
   const overdueClass = (isEventOverdue(event) && !isEventDone(event)) ? 'overdue' : '';
   const doneClass = isEventDone(event) ? 'done' : '';
 
@@ -54,7 +44,7 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
     <section
       className={`event ${overdueClass} ${doneClass}`}
       onClick={ () => eventClicked() }
-      style={{ color: color ?? 'none', opacity: Math.max(0.05, 1 - daysFromNow()/180) }}
+      style={{ color: color ?? 'none', opacity: Math.max(0.05, 1 - daysFromNow(event)/180) }}
     >
       <h2 className="event-title">{ event.summary }</h2>
       <span>{ event.description }</span>

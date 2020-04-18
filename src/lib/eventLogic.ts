@@ -39,6 +39,15 @@ export function getStartMoment(event: CalendarEvent): Moment | null {
   return moment(startString);
 }
 
+export function daysFromNow(event: CalendarEvent): number {
+  const start = getStartMoment(event);
+  if (start === null || isEventOverdue(event)) {
+    return 0;
+  }
+
+  return start.diff(moment(), 'days');
+}
+
 async function markEventAsDone(calendarId: string, event: CalendarEvent): Promise<void>{
   const eventPatch: EventPatch = {
     summary: `${DONE_MARK} ${event.summary}`,

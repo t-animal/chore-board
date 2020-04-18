@@ -3,9 +3,7 @@ import { getAllUpcomingEvents } from '../lib/calendarApiFacade';
 import { EventComponent } from './Event';
 import { getOverdueItemsFilter, getDoneItemsFilter } from '../lib/eventFilters';
 import { Configuration } from '../typings/configuration';
-import { CalendarSelector } from './CalendarSelector';
-import { getStartMoment, isEventOverdue } from '../lib/eventLogic';
-import moment from 'moment';
+import { daysFromNow } from '../lib/eventLogic';
 
 type Event = gapi.client.calendar.Event;
 type UpcomingEventsProps = {
@@ -48,15 +46,6 @@ export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
 
   if (!events || events.length === 0) {
     return (<span>No upcoming events found</span>);
-  }
-
-  function daysFromNow(event: Event): number {
-    const start = getStartMoment(event);
-    if (start === null || isEventOverdue(event)) {
-      return 0;
-    }
-
-    return start.diff(moment(), 'days');
   }
 
   const imminentEvents = events.filter(event => daysFromNow(event) <= 7);
