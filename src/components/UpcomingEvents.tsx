@@ -4,6 +4,8 @@ import { EventComponent } from './Event';
 import { getOverdueItemsFilter, getDoneItemsFilter } from '../lib/eventFilters';
 import { Configuration } from '../typings/configuration';
 import { CalendarSelector } from './CalendarSelector';
+import { getStartMoment, isEventOverdue } from '../lib/eventLogic';
+import moment from 'moment';
 
 type Event = gapi.client.calendar.Event;
 type UpcomingEventsProps = {
@@ -53,8 +55,21 @@ export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
     return (<span>No upcoming events found</span>);
   }
 
-  return (<> {
-    events
+  function daysFromNow(event: Event): number {
+    const start = getStartMoment(event);
+    if (start === null || isEventOverdue(event)) {
+      return 0;
+    }
+
+    return start.diff(moment(), 'days');
+  }
+
+  const imminentEvents = events.filter(event => daysFromNow(event) <= 7);
+  const soonEvents     = events.filter(event => daysFromNow(event) > 7 && daysFromNow(event) <= 45);
+  const distantEvents  = events.filter(event => daysFromNow(event) > 45);
+
+  const renderEvents = (eventsToRender: Event[]): JSX.Element[] =>
+    eventsToRender
       .filter(getOverdueItemsFilter(backlogTimeSpan))
       .filter(getDoneItemsFilter(props.config.cleanUpTime))
       .map(event =>
@@ -62,6 +77,14 @@ export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
           key={event.id}
           calendarId={selectedCalendar}
           event={event}
-          eventUpdated={listUpcomingEvents}></EventComponent>)
-  } </>);
+          eventUpdated={listUpcomingEvents}></EventComponent>);
+
+  return (<>
+    { renderEvents(imminentEvents) }
+    <div className="divider">Soon: </div>
+    { renderEvents(soonEvents) }
+    <div className="divider">Distant: </div>
+    { renderEvents(distantEvents) }
+  </>);
+
 }
