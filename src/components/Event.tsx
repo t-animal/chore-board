@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { isEventOverdue, isEventDone, toggleEventDoneness } from '../lib/eventLogic';
+import { isEventOverdue, isEventDone, toggleEventDoneness, getStartMoment } from '../lib/eventLogic';
 import { getEventColor } from '../lib/colorApiFacade';
 import moment from 'moment';
 
@@ -30,22 +30,31 @@ export function EventComponent(props: EventComponentProps): JSX.Element {
   }
 
   function getDueDate(): string {
-    const dueString = event.start?.dateTime ?? event.start?.date;
-    if (dueString === null) {
+    const start = getStartMoment(event);
+    if (start === null) {
       return 'Unknown';
     }
 
-    return moment(dueString).fromNow();
+    return start.fromNow();
   }
+
+  function daysFromNow(): number {
+    const start = getStartMoment(event);
+    if (start === null || isEventOverdue(event)) {
+      return 0;
+    }
+
+    return start.diff(moment(), 'days');
+  }
+
+  const overdueClass = (isEventOverdue(event) && !isEventDone(event)) ? 'overdue' : '';
+  const doneClass = isEventDone(event) ? 'done' : '';
 
   return (
     <section
-      className={
-        `event
-        ${(isEventOverdue(event) && !isEventDone(event)) ? 'overdue' : ''}
-        ${isEventDone(event) ? 'done' : ''}`}
+      className={`event ${overdueClass} ${doneClass}`}
       onClick={ () => eventClicked() }
-      style={{ color: color ?? 'none' }}
+      style={{ color: color ?? 'none', opacity: Math.max(0.05, 1 - daysFromNow()/180) }}
     >
       <h2 className="event-title">{ event.summary }</h2>
       <span>{ event.description }</span>
