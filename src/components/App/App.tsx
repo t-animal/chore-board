@@ -25,7 +25,15 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
         <Drawer getContainer={sidebarRef.current}>
 
           <ConfigurationComponent></ConfigurationComponent>
-          <AuthButton signedIn={props.signedIn}></AuthButton>
+          <section>
+            <AuthButton signedIn={props.signedIn}></AuthButton>
+          </section>
+
+          <footer>
+            Fork me on <a href="https://github.com/t-animal/chore-board">Github</a>.<br />
+            Favicon based on artwork licensed CC-BY
+            by <a href="https://thenounproject.com/term/cleaning/1944288/">monkik</a>.
+          </footer>
         </Drawer>
       </aside>
 
