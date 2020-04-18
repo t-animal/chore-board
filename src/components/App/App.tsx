@@ -35,9 +35,20 @@ function App(props: {apiLoaded: boolean; signedIn: boolean}): JSX.Element {
         </header>
 
         <ConfigurationConsumer>
-          {context => props.signedIn
-            ? <main><UpcomingEvents config={context.config}></UpcomingEvents></main>
-            : <AuthButton signedIn={props.signedIn}></AuthButton> }
+          {context => {
+
+            const errorHandler = (e: any): void => {
+              console.error(e);
+              if (e?.status === 404) {
+                alert('Could not load calendar. Google says it\'s not existing. Please choose a different one.');
+                context.mutators.setCalendar(null);
+              }
+            };
+
+            return (props.signedIn
+              ? <main><UpcomingEvents config={context.config} loadingCalendarsFailed={errorHandler}></UpcomingEvents></main>
+              : <AuthButton signedIn={props.signedIn}></AuthButton>);
+          }}
         </ConfigurationConsumer>
       </div>
     </>

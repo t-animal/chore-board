@@ -68,7 +68,7 @@ aside.config input[type=range] {
   top: -3px;
 }
 
-aside.config select {
+select {
   border-radius: 5px;
 }
 

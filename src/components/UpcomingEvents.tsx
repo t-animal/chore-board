@@ -3,30 +3,50 @@ import { getAllUpcomingEvents } from '../lib/calendarApiFacade';
 import { EventComponent } from './Event';
 import { getOverdueItemsFilter, getDoneItemsFilter } from '../lib/eventFilters';
 import { Configuration } from '../typings/configuration';
+import { CalendarSelector } from './CalendarSelector';
 
 type Event = gapi.client.calendar.Event;
 type UpcomingEventsProps = {
   config: Configuration;
+  loadingCalendarsFailed:  (e: {status?: number}) => void;
 };
 
 export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
 
-  const { selectedCalendar: calendarId, backlogTimeSpan } = props.config;
+  const { selectedCalendar, backlogTimeSpan } = props.config;
 
   const [loadedCalendar, setLoadedCalendar] = useState<null | string>(null);
   const [events, setEvents] = useState([] as Event[]);
 
   async function listUpcomingEvents(): Promise<void> {
-    const upcomingEvents = await getAllUpcomingEvents(calendarId);
-
-    if (upcomingEvents) {
-      setEvents(upcomingEvents);
+    if (selectedCalendar === null){
+      return;
     }
+
+    try {
+      const upcomingEvents = await getAllUpcomingEvents(selectedCalendar);
+
+      if (upcomingEvents) {
+        setEvents(upcomingEvents);
+      }
+
+    } catch (e) {
+      props.loadingCalendarsFailed(e);
+    }
+
   }
 
-  if (loadedCalendar !== calendarId) {
-    setLoadedCalendar(calendarId);
+  if (selectedCalendar !== null && loadedCalendar !== selectedCalendar) {
     listUpcomingEvents();
+    setLoadedCalendar(selectedCalendar);
+  }
+
+  if (selectedCalendar === null ) {
+    return (<div>
+      <p>Please select a calendar. You can change your selection at any time in the sidebar.<br />
+      It is recommended to create a dedicated calendar e.g. named &quot;Chores&quot;.</p>
+      <CalendarSelector />
+    </div>);
   }
 
   if (!events || events.length === 0) {
@@ -40,7 +60,7 @@ export default function UpcomingEvents(props: UpcomingEventsProps): JSX.Element{
       .map(event =>
         <EventComponent
           key={event.id}
-          calendarId={calendarId}
+          calendarId={selectedCalendar}
           event={event}
           eventUpdated={listUpcomingEvents}></EventComponent>)
   } </>);
