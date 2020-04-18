@@ -8,40 +8,32 @@ input[type=range]:focus {
 input[type=range]::-webkit-slider-runnable-track {
   height: 3px;
   cursor: pointer;
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-  background: #cccccc;
+  background: #ccc;
   border-radius: 0px;
-  border: 0px solid #562425;
 }
 input[type=range]::-webkit-slider-thumb {
-  box-shadow: 0px 0px 0px #050000, 0px 0px 0px #1f0000;
-  border: 1.1px solid #eeeeee;
-  height: 9px;
+  height: 10px;
   width: 16px;
-  border-radius: 50px;
-  background: #dddddd;
+  border: 2px solid #eee;
+  border-radius: 3px;
+  background: #666;
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -3px;
 }
-input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #d9d9d9;
-}
 input[type=range]::-moz-range-track {
   height: 3px;
   cursor: pointer;
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-  background: #cccccc;
+  background: #ccc;
   border-radius: 0px;
-  border: 0px solid #562425;
+  border: 0px solid #010101;
 }
 input[type=range]::-moz-range-thumb {
-  box-shadow: 0px 0px 0px #050000, 0px 0px 0px #1f0000;
-  border: 1.1px solid #eeeeee;
-  height: 9px;
+  border: 2px solid #eee;
+  height: 10px;
   width: 16px;
-  border-radius: 50px;
-  background: #dddddd;
+  border-radius: 3px;
+  background: #666;
   cursor: pointer;
 }
 input[type=range]::-ms-track {
@@ -52,30 +44,20 @@ input[type=range]::-ms-track {
   color: transparent;
 }
 input[type=range]::-ms-fill-lower {
-  background: #bfbfbf;
-  border: 0px solid #562425;
+  background: #ccc;
+  border: 1px solid #eee;
   border-radius: 0px;
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
 }
 input[type=range]::-ms-fill-upper {
-  background: #cccccc;
-  border: 0px solid #562425;
+  background: #ccc;
+  border: 1px solid #eee;
   border-radius: 0px;
-  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
 }
 input[type=range]::-ms-thumb {
-  box-shadow: 0px 0px 0px #050000, 0px 0px 0px #1f0000;
-  border: 1.1px solid #eeeeee;
-  height: 9px;
+  height: 10px;
   width: 16px;
-  border-radius: 50px;
-  background: #dddddd;
+  border-radius: 3px;
+  border: 2px solid #eee;
+  background: #666;
   cursor: pointer;
-  height: 3px;
-}
-input[type=range]:focus::-ms-fill-lower {
-  background: #cccccc;
-}
-input[type=range]:focus::-ms-fill-upper {
-  background: #d9d9d9;
 }
