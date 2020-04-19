@@ -54,7 +54,7 @@ h1, h3 {
 }
 
 nav.icon-navigation {
-  position: absolute;
+  position: fixed;
   top: 55px;
   left: 0px;
 
