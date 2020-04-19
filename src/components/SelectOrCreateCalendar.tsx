@@ -10,15 +10,22 @@ export function SelectOrCreateCalendar(): JSX.Element {
   const [creatingEvents, setCreatingEvents] = useState(false);
 
   async function createAndFillCalendar(setCalendar: (calendarId: string) => void): Promise<void> {
-    setShowSpinner(true);
-    setCreatingCalendar(true);
-    const calendarId = await createNewCalendar();
-    setCreatingCalendar(false);
-    setCreatingEvents(true);
-    await insertSampleEvents(calendarId);
-    setCreatingEvents(false);
-    setCalendar(calendarId);
-    setShowSpinner(false);
+    try {
+      setShowSpinner(true);
+      setCreatingCalendar(true);
+      const calendarId = await createNewCalendar();
+      setCreatingCalendar(false);
+      setCreatingEvents(true);
+      await insertSampleEvents(calendarId);
+      setCreatingEvents(false);
+      setCalendar(calendarId);
+      setShowSpinner(false);
+    } catch (e) {
+      alert('Failed. Please try again.');
+      setShowSpinner(false);
+      setCreatingCalendar(false);
+      setCreatingEvents(false);
+    }
   }
 
   return (<ConfigurationConsumer>{context => (
