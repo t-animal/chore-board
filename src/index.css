@@ -55,6 +55,7 @@ aside.config section:last-of-type {
 aside.config footer {
   font-size: 0.8rem;
   padding-bottom: 5px;
+  margin-top: 60px;
 }
 
 div.main-container {

@@ -16,6 +16,12 @@ export function Sidebar(props: {signedIn: boolean}): JSX.Element {
           <AuthButton signedIn={props.signedIn}></AuthButton>
         </section>
 
+        <section>
+          <h3>Create new chores</h3>
+          Please use <a href="https://calendar.google.com/calendar/r/eventedit">google calendar</a>.
+          Make sure to set the right calendar. You can use event-colors.
+        </section>
+
         <footer>
           Fork me on <a href="https://github.com/t-animal/chore-board">Github</a>.<br />
           Favicon based on artwork licensed CC-BY
