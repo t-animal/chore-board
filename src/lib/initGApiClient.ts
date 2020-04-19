@@ -1,4 +1,3 @@
-import { CLIENT_ID } from '../api-keys';
 import App from '../components/App/App';
 import { isUserSignedIn } from './authApiFacade';
 
@@ -19,7 +18,7 @@ const SCOPES = [
 export async function initClient(renderFunction: (appProps: Parameters<typeof App>[0]) => void): Promise<void> {
   try {
     await gapi.client.init({
-      clientId: CLIENT_ID,
+      clientId: process.env.REACT_APP_CLIENT_ID,
       discoveryDocs: DISCOVERY_DOCS,
       scope: SCOPES.join(' ')
     });
