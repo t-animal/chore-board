@@ -34,4 +34,6 @@ function handleClientLoad(): void {
   gapi.load('client:auth2', () => initClient(render));
 }
 
-(window as typeof window & {handleClientLoad: () => void}).handleClientLoad = handleClientLoad;
+(function(){
+  (window as typeof window & {handleClientLoad: () => void}).handleClientLoad = handleClientLoad;
+})();
