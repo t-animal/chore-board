@@ -5,6 +5,7 @@ import './index.css';
 import './spinner.css';
 
 import App from './components/App/App';
+import { IconNav } from './components/icon-nav';
 
 import { initClient } from './lib/initGApiClient';
 import { ConfigurationProvider } from './components/ConfigurationContext';
@@ -14,6 +15,7 @@ const render = (appProps: Parameters<typeof App>[0]): void => {
   ReactDOM.render(
     <React.StrictMode>
       <ConfigurationProvider>
+        <IconNav />
         <App {...appProps}/>
       </ConfigurationProvider>
     </React.StrictMode>,

@@ -52,3 +52,22 @@ input:focus {
 h1, h3 {
   color: var(--primary-highlight);
 }
+
+nav.icon-navigation {
+  position: absolute;
+  top: 55px;
+  left: 0px;
+
+  display: flex;
+  flex-direction: column;;
+}
+
+nav.icon-navigation img,
+nav.icon-navigation svg {
+  background: var(--secondary-foreground);
+  padding: 7px;
+  border-radius: 0px 5px 5px 0;
+
+  width: 25px;
+  margin: 10px 0;
+}
