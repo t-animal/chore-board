@@ -34,7 +34,9 @@ export function SelectOrCreateCalendar(): JSX.Element {
         .loader {'{'} font-size: 4px; margin: 0px; left: 15px; display: inline-block; {'}'}
       </style>
       <p>Please select a calendar. You can change your selection at any time in the sidebar.<br />
-      It is recommended to create a dedicated calendar e.g. named &quot;Chores&quot;.</p>
+      It is recommended to create a dedicated calendar e.g. named &quot;Chores&quot;.<br />
+      If you haven&apos;t done that yet you can do it <a href="https://calendar.google.com/calendar/r/settings/createcalendar">using this link</a>.
+      Please reload this page after you&apos;re done.</p>
       <CalendarSelector />
 
       <p>Alternatively, you can create a sample calendar.<br />This needs additional write-permissions
