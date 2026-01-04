@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Calendar API Browser Example</title>
+  <script async defer src="https://apis.google.com/js/api.js" ></script>
+  <script src="https://accounts.google.com/gsi/client" async onload="googleIdentityServicesTrampoline()"></script> <!-- Google Identity Services, see #g_id_onload -->
+
+  <script type="importmap">
+  {
+    "imports": {
+      "temporal-polyfill": "../node_modules/temporal-polyfill/index.js"
+    }
+  }
+  </script>
+
+  <script>
+    googleIdentityServicesTrampoline = () => {
+      if(typeof window.googleIdentityServicesLoaded !== 'function') {
+        console.log("Google Identity Services waiting for module to load");
+        window.setTimeout(googleIdentityServicesTrampoline, 50);
+        return;
+      }
+      window.googleIdentityServicesLoaded();
+    };
+  </script>
+  <script type="module">
+    const CLIENT_ID = "client-id"; // Replace with your client ID
+
+    window.googleIdentityServicesLoaded = googleIdentityServicesTrampoline;
+
+    async function listCalendarsUsingFacade() {
+      const { getGcalApi, listCalendars } = await import('../dist/calendar-facade.js');
+
+      try {
+        const api = await getGcalApi({clientId: CLIENT_ID}, 'browser');
+        const calendars = await listCalendars(api);
+
+        if (!calendars || calendars.length === 0) {
+          document.getElementById('content').innerText = 'No calendars found.';
+          return;
+        }
+
+        const output = calendars.reduce(
+          (str, calendar) => `${str}${calendar.title}\n`,
+          'Calendars:\n'
+        );
+        document.getElementById('content').innerText = output;
+      } catch (err) {
+        document.getElementById('content').innerText = `Error: ${err.message} \n@ ${err.stack}`;
+      }
+    }
+
+    function googleIdentityServicesTrampoline() {
+      // https://developers.google.com/identity/gsi/web/reference/js-reference?hl=de
+      
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        ux_mode: "popup",
+        auto_select: true,
+        callback: (response) => {
+          console.log("User is logged in, got response", response);
+          listCalendarsUsingFacade();
+        },
+      });
+
+      google.accounts.id.prompt(); // Display the One Tap prompt
+    };
+
+  </script>
+
+
+</head>
+<body>
+  <h1>Google Calendar API Browser Example</h1>
+  <pre id="content" style="white-space: pre-wrap;">Loading...</pre>
+</body>
+</html>

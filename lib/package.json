@@ -1,0 +1,24 @@
+{
+  "name": "chores-lib",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "peerDependencies": {
+    "googleapis": "^169.0.0"
+  },
+  "dependencies": {
+    "temporal-polyfill": "^0.3.0"
+  },
+  "devDependencies": {
+    "@types/gapi": "^0.0.47",
+    "@types/gapi.calendar": "^3.0.11",
+    "typescript": "^5.9.3"
+  }
+}
