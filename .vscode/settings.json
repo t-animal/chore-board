@@ -6,12 +6,15 @@
     ],
     "editor.tabSize": 2,
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
+        "source.fixAll.biome": "explicit",
+        "source.biome": "explicit",
+        "source.organizeImports.biome": "explicit"
     },
-    "eslint.validate": [
-        "javascript",
-        "javascriptreact",
-        "typescript",
-        "typescriptreact"
-      ]
+    "editor.formatOnSave": true,
+    "[json]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "biomejs.biome"
+    }
 }
