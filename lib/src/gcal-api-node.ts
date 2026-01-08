@@ -104,11 +104,7 @@ export class GCalApiNode implements GCalApi {
       return Result.error("Failed to parse original event");
     }
 
-    const newSummary = getNewSummary(
-      parsedOriginalEvent.summary,
-      prefix,
-      action,
-    );
+    const newSummary = getNewSummary(parsedOriginalEvent.summary, prefix, action);
 
     if (newSummary === parsedOriginalEvent.summary) {
       return Result.ok(parsedOriginalEvent);
@@ -122,9 +118,7 @@ export class GCalApiNode implements GCalApi {
 
     const patchedEvent = parseEvent(patchRes.data);
     if (patchedEvent === null) {
-      return Result.error(
-        `Failed to parse patched event: ${patchRes.statusText}`,
-      );
+      return Result.error(`Failed to parse patched event: ${patchRes.statusText}`);
     }
     return Result.ok(patchedEvent);
   }

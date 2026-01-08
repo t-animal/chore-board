@@ -9,13 +9,12 @@ export type Calendar = {
 export type CalendarEvent = {
   id: string;
   summary: string;
+  description: string;
   start: Temporal.Instant;
   end: Temporal.Instant;
 };
 
-export type Result<T, E = unknown> =
-  | { success: true; data: T }
-  | { success: false; error: E };
+export type Result<T, E = unknown> = { success: true; data: T } | { success: false; error: E };
 
 export const Result = {
   ok<T>(data: T): Result<T> {
@@ -49,19 +48,40 @@ export interface GCalApi {
 export function parseEvent({
   id,
   summary,
+  description,
   start,
   end,
-}:
-  | calendar_v3.Schema$Event
-  | gapi.client.calendar.Event): CalendarEvent | null {
-  if (!id || !summary || !start?.dateTime || !end?.dateTime) {
+}: calendar_v3.Schema$Event | gapi.client.calendar.Event): CalendarEvent | null {
+  if (!id || !summary || !start || !end) {
     return null;
   }
+
+  function parseEventDate(dateTime: {
+    dateTime?: string | null | undefined;
+    date?: string | null | undefined;
+  }): Temporal.Instant | null {
+    if (dateTime.dateTime !== undefined && dateTime.dateTime !== null) {
+      return Temporal.Instant.from(dateTime.dateTime);
+    }
+    if (dateTime.date !== undefined && dateTime.date !== null) {
+      return Temporal.PlainDate.from(dateTime.date)
+        .toZonedDateTime(Temporal.Now.timeZoneId())
+        .toInstant();
+    }
+    return null;
+  }
+  const startInstant = parseEventDate(start);
+  const endInstant = parseEventDate(end);
+  if (startInstant === null || endInstant === null) {
+    return null;
+  }
+
   return {
     id,
-    summary,
-    start: Temporal.Instant.from(start.dateTime),
-    end: Temporal.Instant.from(end.dateTime),
+    summary: summary,
+    description: description ?? "",
+    start: startInstant,
+    end: endInstant,
   };
 }
 

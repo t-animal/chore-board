@@ -31,7 +31,7 @@
     window.googleIdentityServicesLoaded = googleIdentityServicesTrampoline;
 
     async function listCalendarsUsingFacade() {
-      const { getGcalApi, listCalendars } = await import('../dist/calendar-facade.js');
+      const { getGcalApi, listCalendars } = await import('../dist/index.js');
 
       try {
         const api = await getGcalApi({clientId: CLIENT_ID}, 'browser');
