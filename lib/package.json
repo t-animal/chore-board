@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/gapi": "^0.0.47",
     "@types/gapi.calendar": "^3.0.11",
+    "@types/gapi.client.calendar": "^3.0.1",
     "typescript": "^5.9.3"
   }
 }

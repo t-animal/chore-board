@@ -1,12 +1,13 @@
 import { Temporal } from "temporal-polyfill";
 import { createCalendar, listEvents, modifyEventTitle } from "./calendar-facade.js";
-import type { GCalApi } from "./gcal-api-common.js";
+import type { Color, GCalApi } from "./gcal-api-common.js";
 
 const DEFAULT_CHORE_CALENDAR_NAME = "Chores";
 const COMPLETED_PREFIX = "✓ ";
 
 export class ChoresApi {
   private calendarId: string | null = null;
+  private calendarColor: Color | null = null;
 
   constructor(
     private gcal: GCalApi,
@@ -18,7 +19,7 @@ export class ChoresApi {
   }
 
   async getChores(daysInPast: number, daysInFuture: number, maxChores: number): Promise<Chore[]> {
-    const calendarId = await this.getCalendarId();
+    const { calendarId, calendarColor } = await this.getCalendarInfo();
     const events = await listEvents(this.gcal, calendarId, daysInPast, daysInFuture, maxChores);
 
     return events.map(
@@ -28,24 +29,24 @@ export class ChoresApi {
           event.summary,
           event.description || "",
           event.start,
-          "#000000" as const, // TODO
+          event.color ?? calendarColor,
         ),
     );
   }
 
   async markChoreComplete(choreId: string) {
-    const calendarId = await this.getCalendarId();
+    const { calendarId } = await this.getCalendarInfo();
     await modifyEventTitle(this.gcal, calendarId, choreId, COMPLETED_PREFIX, "prepend");
   }
 
   async markChoreIncomplete(choreId: string) {
-    const calendarId = await this.getCalendarId();
+    const { calendarId } = await this.getCalendarInfo();
     await modifyEventTitle(this.gcal, calendarId, choreId, COMPLETED_PREFIX, "remove");
   }
 
-  private async getCalendarId(): Promise<string> {
+  private async getCalendarInfo(): Promise<{ calendarId: string; calendarColor: Color | null }> {
     if (this.calendarId) {
-      return this.calendarId;
+      return { calendarId: this.calendarId, calendarColor: this.calendarColor };
     }
 
     const calendars = await this.gcal.listCalendars();
@@ -54,8 +55,9 @@ export class ChoresApi {
       throw new Error(`Chore calendar "${this.calendarName}" not found`);
     }
     this.calendarId = choreCalendar.id;
+    this.calendarColor = choreCalendar.color;
 
-    return choreCalendar.id;
+    return { calendarId: choreCalendar.id, calendarColor: this.calendarColor };
   }
 }
 
@@ -65,7 +67,7 @@ class Chore {
     public title: string,
     public description: string,
     public dueDate: Temporal.Instant,
-    public color: `#${string}`,
+    public color: Color | null,
   ) {}
 
   public isCompleted() {

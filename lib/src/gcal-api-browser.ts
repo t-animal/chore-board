@@ -1,6 +1,7 @@
 import {
   type Calendar,
   type CalendarEvent,
+  type Color,
   type GCalApi,
   getNewSummary,
   parseCalendar,
@@ -12,6 +13,8 @@ type GoogleApi = typeof globalThis.gapi;
 
 export class GCalApiBrowser implements GCalApi {
   private gapi: GoogleApi;
+
+  private colors: gapi.client.calendar.Colors | null = null;
 
   constructor(gapi: GoogleApi) {
     this.gapi = gapi;
@@ -43,7 +46,8 @@ export class GCalApiBrowser implements GCalApi {
     const res = await this.gapi.client.calendar.calendarList.list();
     if (!res.result?.items) return [];
 
-    return res.result.items.map(parseCalendar).filter((c) => c !== null);
+    const calendars = Promise.all(res.result.items.map((item) => parseCalendar(item, this)));
+    return (await calendars).filter((c) => c !== null);
   }
 
   async createCalendar(name: string): Promise<Result<Calendar>> {
@@ -55,7 +59,7 @@ export class GCalApiBrowser implements GCalApi {
       return Result.error(`Failed to create calendar: ${res.statusText}`);
     }
 
-    const parsedResult = parseCalendar(res.result);
+    const parsedResult = await parseCalendar(res.result, this);
     if (parsedResult === null) {
       return Result.error(`Failed to create calendar: ${res.statusText}`);
     }
@@ -79,7 +83,9 @@ export class GCalApiBrowser implements GCalApi {
 
     if (!res.result?.items) return [];
 
-    return res.result?.items.map(parseEvent).filter((e) => e !== null);
+    const events = Promise.all(res.result?.items.map((it) => parseEvent(it, this)));
+
+    return (await events).filter((it) => it !== null);
   }
 
   async patchEvent(
@@ -94,7 +100,7 @@ export class GCalApiBrowser implements GCalApi {
     });
     const originalEvent = originalResult.result;
 
-    const parsedOriginalEvent = parseEvent(originalEvent);
+    const parsedOriginalEvent = await parseEvent(originalEvent, this);
     if (parsedOriginalEvent === null) {
       return Result.error("Failed to parse original event");
     }
@@ -112,10 +118,26 @@ export class GCalApiBrowser implements GCalApi {
       },
     });
 
-    const patchedEvent = parseEvent(patchRes.result);
+    const patchedEvent = await parseEvent(patchRes.result, this);
     if (patchedEvent === null) {
       return Result.error(`Failed to parse patched event: ${patchRes.statusText}`);
     }
     return Result.ok(patchedEvent);
+  }
+
+  async resolveColor(colorId: string, type: "calendar" | "event"): Promise<Color | null> {
+    if (!this.colors) {
+      const res = await this.gapi.client.calendar.colors.get({});
+      this.colors = res.result;
+    }
+
+    const typeColor = (type === "calendar" ? this.colors?.calendar : this.colors?.event)?.[colorId];
+    const { foreground, background } = typeColor ?? {};
+
+    if (!foreground || !background) {
+      return null;
+    }
+
+    return { foreground, background };
   }
 }

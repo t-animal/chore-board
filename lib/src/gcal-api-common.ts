@@ -4,6 +4,7 @@ import { Temporal } from "temporal-polyfill";
 export type Calendar = {
   id: string;
   title: string;
+  color: Color | null;
 };
 
 export type CalendarEvent = {
@@ -12,6 +13,12 @@ export type CalendarEvent = {
   description: string;
   start: Temporal.Instant;
   end: Temporal.Instant;
+  color: Color | null;
+};
+
+export type Color = {
+  foreground: string;
+  background: string;
 };
 
 export type Result<T, E = unknown> = { success: true; data: T } | { success: false; error: E };
@@ -43,15 +50,21 @@ export interface GCalApi {
     prefix: string,
     action: "prepend" | "remove",
   ): Promise<Result<CalendarEvent>>;
+
+  resolveColor(colorId: string, type: "calendar" | "event"): Promise<Color | null>;
 }
 
-export function parseEvent({
-  id,
-  summary,
-  description,
-  start,
-  end,
-}: calendar_v3.Schema$Event | gapi.client.calendar.Event): CalendarEvent | null {
+export async function parseEvent(
+  {
+    id,
+    summary,
+    description,
+    start,
+    end,
+    colorId,
+  }: calendar_v3.Schema$Event | gapi.client.calendar.Event,
+  gcalApi: GCalApi,
+): Promise<CalendarEvent | null> {
   if (!id || !summary || !start || !end) {
     return null;
   }
@@ -76,29 +89,52 @@ export function parseEvent({
     return null;
   }
 
+  let color: Color | null = null;
+  if (colorId) {
+    color = await gcalApi.resolveColor(colorId, "event");
+  }
+
   return {
     id,
     summary: summary,
     description: description ?? "",
     start: startInstant,
     end: endInstant,
+    color,
   };
 }
 
-export function parseCalendar({
-  id,
-  summary,
-}:
-  | calendar_v3.Schema$CalendarListEntry
-  | gapi.client.calendar.CalendarListEntry
-  | gapi.client.calendar.Calendar): Calendar | null {
+export async function parseCalendar(
+  {
+    id,
+    summary,
+    ...rawData
+  }:
+    | calendar_v3.Schema$CalendarListEntry
+    | gapi.client.calendar.CalendarListEntry
+    | gapi.client.calendar.Calendar,
+  gcalApi: GCalApi,
+): Promise<Calendar | null> {
   if (!id || !summary) {
     return null;
+  }
+
+  let color: Color | null = null;
+  if (
+    "foregroundColor" in rawData &&
+    "backgroundColor" in rawData &&
+    rawData.foregroundColor &&
+    rawData.backgroundColor
+  ) {
+    color = { foreground: rawData.foregroundColor, background: rawData.backgroundColor };
+  } else if ("colorId" in rawData && rawData.colorId) {
+    color = await gcalApi.resolveColor(rawData.colorId, "calendar");
   }
 
   return {
     id,
     title: summary,
+    color,
   };
 }
 
