@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+import { CalendarSelector } from "./components/CalendarSelector";
+import { ChoresList } from "./components/ChoresList";
+import { LoginHint } from "./components/LoginHint";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { ChoresApiProvider } from "./contexts/ChoresApiContext";
+
+function AppContent() {
+  const { isAuthenticated, logout } = useAuth();
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1>Chores</h1>
+      {!isAuthenticated ? (
+        <LoginHint />
+      ) : (
+        <>
+          <button type="button" onClick={logout}>
+            Logout
+          </button>
+          <CalendarSelector />
+          <ChoresList />
+        </>
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <AuthProvider>
+      <ChoresApiProvider>
+        <AppContent />
+      </ChoresApiProvider>
+    </AuthProvider>
+  );
+}

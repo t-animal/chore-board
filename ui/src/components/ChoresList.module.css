@@ -1,0 +1,36 @@
+.chores-list {
+  list-style: none;
+}
+@media only screen and (max-width: 599px){
+  .chores-list-separator {
+    margin-top: 1rem;
+  }
+}
+
+@media only screen and (min-width: 600px){
+  .chores-list {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-around;
+    justify-items: stretch;
+    gap: 16px;
+  }
+
+  .chores-list-separator  {
+    grid-column: span 2;
+  }
+}
+
+@media only screen and (min-width: 800px){
+  .chores-list {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    justify-content: space-around;
+    justify-items: stretch;
+    gap: 16px;
+  }
+
+  .chores-list-separator  {
+    grid-column: span 3;
+  }
+}

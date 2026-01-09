@@ -61,7 +61,7 @@ export class ChoresApi {
   }
 }
 
-class Chore {
+export class Chore {
   constructor(
     public id: string,
     public title: string,
@@ -101,6 +101,6 @@ class Chore {
 
   private getStartOfTomorrow(): Temporal.Instant {
     const startOfToday = this.getStartOfToday();
-    return startOfToday.add(Temporal.Duration.from({ days: 1 }));
+    return startOfToday.add(Temporal.Duration.from({ hours: 24 })); // This breaks on DST changes? why can't we add 1 day?
   }
 }

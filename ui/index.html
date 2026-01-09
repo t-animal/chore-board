@@ -2,12 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>chore-board</title>
+    <title>Chores</title>
+    <script>
+      if (window.googleIdentityServicesLoadedCallback === undefined) {
+        const { promise: googleIdentityServicesLoaded, resolve: googleIdentityServicesLoadedCallback } =
+          Promise.withResolvers();
+
+        window.googleIdentityServicesLoaded = googleIdentityServicesLoaded;
+        window.googleIdentityServicesLoadedCallback = googleIdentityServicesLoadedCallback;
+      }
+
+      if (window.googleApisLoadedCallback === undefined) {
+        const { promise: googleApisLoaded, resolve: googleApisLoadedCallback } =
+          Promise.withResolvers();
+
+        window.googleApisLoaded = googleApisLoaded;
+        window.googleApisLoadedCallback = googleApisLoadedCallback;
+      }
+    </script>
+    <script src="https://apis.google.com/js/api.js" async defer onload="window.googleApisLoadedCallback()"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer onload="window.googleIdentityServicesLoadedCallback()"></script>
   </head>
   <body>
-    <div id="root"></div>
+    <main id="root"></main>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
