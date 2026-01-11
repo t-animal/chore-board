@@ -23,7 +23,12 @@ export function Chore({ chore }: { chore: ChoreItem }) {
   return (
     <section className={classList.join(" ")}>
       <h2 style={{ color: chore.color?.background ?? "inherit" }}>{title}</h2>
-      <div className={style["description"]}>{description}</div>
+      <div className={style["description"]}>
+        {description
+          .replaceAll("<br>", "\n")
+          .replaceAll("<li>", "\n- ")
+          .replaceAll(/<\/?[^>]+(>|$)/g, "")}
+      </div>
       <aside className={style["due-date"]}>
         {formatRelativeDurationDaysHours(dueDate.since(Temporal.Now.instant()))}
       </aside>

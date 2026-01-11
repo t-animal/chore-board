@@ -37,7 +37,8 @@ section.chore h2 {
 }
 
 section.chore .description {
-  flex: 1
+  flex: 1;
+  white-space: pre-wrap;
 }
 
 section.chore .loader-container {

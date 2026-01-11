@@ -1,6 +1,12 @@
 .chores-list {
   list-style: none;
 }
+
+.chores-list li {
+  opacity: max(0.05, calc(1 - attr(data-days-remaining number)/180));
+}
+
+
 @media only screen and (max-width: 599px){
   .chores-list-separator {
     margin-top: 1rem;

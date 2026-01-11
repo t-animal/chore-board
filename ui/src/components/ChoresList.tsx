@@ -55,21 +55,25 @@ export function ChoresList() {
 
   const now = Temporal.Now.instant();
 
-  const imminent = chores.filter((chore) => {
-    return now.until(chore.dueDate).total("days") <= 7;
-  });
-  const upcoming = chores.filter((chore) => {
+  const choresWithDaysRemaining = chores.map((chore) => {
     const daysRemaining = now.until(chore.dueDate).total("days");
+    return { chore, daysRemaining };
+  });
+
+  const imminent = choresWithDaysRemaining.filter(({ daysRemaining }) => {
+    return daysRemaining <= 7;
+  });
+  const upcoming = choresWithDaysRemaining.filter(({ daysRemaining }) => {
     return daysRemaining > 7 && daysRemaining <= 30;
   });
-  const distant = chores.filter((chore) => {
-    return now.until(chore.dueDate).total("days") > 30;
+  const distant = choresWithDaysRemaining.filter(({ daysRemaining }) => {
+    return daysRemaining > 30;
   });
 
   return (
     <ol className={style["chores-list"]}>
-      {imminent.map((chore) => (
-        <li key={chore.id}>
+      {imminent.map(({ chore, daysRemaining }) => (
+        <li key={chore.id} data-days-remaining={Math.round(daysRemaining)}>
           <Chore chore={chore} />
         </li>
       ))}
@@ -77,8 +81,8 @@ export function ChoresList() {
       {upcoming.length > 0 && (
         <>
           <li className={style["chores-list-separator"]}>Upcoming</li>
-          {upcoming.map((chore) => (
-            <li key={chore.id}>
+          {upcoming.map(({ chore, daysRemaining }) => (
+            <li key={chore.id} data-days-remaining={Math.round(daysRemaining)}>
               <Chore chore={chore} />
             </li>
           ))}
@@ -88,8 +92,8 @@ export function ChoresList() {
       {distant.length > 0 && (
         <>
           <li className={style["chores-list-separator"]}>Distant</li>
-          {distant.map((chore) => (
-            <li key={chore.id}>
+          {distant.map(({ chore, daysRemaining }) => (
+            <li key={chore.id} data-days-remaining={Math.round(daysRemaining)}>
               <Chore chore={chore} />
             </li>
           ))}
