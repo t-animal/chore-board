@@ -44,7 +44,11 @@ export function ChoresList() {
     <ol className={style["chores-list"]}>
       {modificationError && <li>Failed to update chore: {modificationError}</li>}
       {imminent.map(({ chore, daysRemaining }) => (
-        <li key={chore.id} data-days-remaining={Math.round(daysRemaining)}>
+        <li
+          key={chore.id}
+          data-days-remaining={Math.round(daysRemaining)}
+          className={[chore.isCompleted() ? style.completed : null].filter(Boolean).join(" ")}
+        >
           <Chore chore={chore} />
         </li>
       ))}
@@ -53,7 +57,11 @@ export function ChoresList() {
         <>
           <li className={style["chores-list-separator"]}>Upcoming</li>
           {upcoming.map(({ chore, daysRemaining }) => (
-            <li key={chore.id} data-days-remaining={Math.round(daysRemaining)}>
+            <li
+              key={chore.id}
+              data-days-remaining={Math.round(daysRemaining)}
+              className={[chore.isCompleted() ? style.completed : null].filter(Boolean).join(" ")}
+            >
               <Chore chore={chore} />
             </li>
           ))}
@@ -64,7 +72,11 @@ export function ChoresList() {
         <>
           <li className={style["chores-list-separator"]}>Distant</li>
           {distant.map(({ chore, daysRemaining }) => (
-            <li key={chore.id} data-days-remaining={Math.round(daysRemaining)}>
+            <li
+              key={chore.id}
+              data-days-remaining={Math.round(daysRemaining)}
+              className={[chore.isCompleted() ? style.completed : null].filter(Boolean).join(" ")}
+            >
               <Chore chore={chore} />
             </li>
           ))}

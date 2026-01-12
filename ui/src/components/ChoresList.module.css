@@ -2,11 +2,33 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  --chores-gap: 16px;
+  gap: var(--chores-gap);
 }
 
 .chores-list li {
   opacity: max(0.05, calc(1 - attr(data-days-remaining number)/180));
+
+  max-height: 1000px;
+  margin-block: 0;
+  overflow: hidden;
+
+  transition:
+    opacity 250ms ease,
+    max-height 250ms ease 250ms,
+    margin-block 250ms ease 250ms;
+  will-change: opacity, max-height, margin-block;
+}
+
+.chores-list li.completed {
+  opacity: 0;
+  max-height: 0;
+  margin-block: calc(var(--chores-gap) * -0.5);
+  pointer-events: none;
+}
+
+.chores-list li.completed-initial {
+  transition: none;
 }
 
 
@@ -22,7 +44,15 @@
     grid-template-columns: auto auto;
     justify-content: space-around;
     justify-items: stretch;
-    gap: 16px;
+    gap: var(--chores-gap);
+  }
+
+  .chores-list li {
+    order: 0;
+  }
+
+  .chores-list li.completed {
+    order: 1000;
   }
 
   .chores-list-separator  {
@@ -36,7 +66,15 @@
     grid-template-columns: auto auto auto;
     justify-content: space-around;
     justify-items: stretch;
-    gap: 16px;
+    gap: var(--chores-gap);
+  }
+
+  .chores-list li {
+    order: 0;
+  }
+
+  .chores-list li.completed {
+    order: 1000;
   }
 
   .chores-list-separator  {
