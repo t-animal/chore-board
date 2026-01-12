@@ -3,7 +3,7 @@ import { createCalendar, listEvents, modifyEventTitle } from "./calendar-facade.
 import type { Color, GCalApi } from "./gcal-api-common.js";
 
 const DEFAULT_CHORE_CALENDAR_NAME = "Chores";
-const COMPLETED_PREFIX = "✓ ";
+const COMPLETED_PREFIX = "✔ ";
 
 export class ChoresApi {
   private calendarId: string | null = null;
