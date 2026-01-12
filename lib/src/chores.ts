@@ -11,7 +11,7 @@ export class ChoresApi {
 
   constructor(
     private gcal: GCalApi,
-    private calendarName: string,
+    private choreCalendarId: string,
   ) {}
 
   createSampleChoresCalendar() {
@@ -36,12 +36,48 @@ export class ChoresApi {
 
   async markChoreComplete(choreId: string) {
     const { calendarId } = await this.getCalendarInfo();
-    await modifyEventTitle(this.gcal, calendarId, choreId, COMPLETED_PREFIX, "prepend");
+    const result = await modifyEventTitle(
+      this.gcal,
+      calendarId,
+      choreId,
+      COMPLETED_PREFIX,
+      "prepend",
+    );
+
+    if (!result.success) {
+      throw result.error instanceof Error ? result.error : new Error(String(result.error));
+    }
+
+    return new Chore(
+      result.data.id,
+      result.data.summary,
+      result.data.description ?? "",
+      result.data.start,
+      result.data.color ?? this.calendarColor,
+    );
   }
 
   async markChoreIncomplete(choreId: string) {
     const { calendarId } = await this.getCalendarInfo();
-    await modifyEventTitle(this.gcal, calendarId, choreId, COMPLETED_PREFIX, "remove");
+    const result = await modifyEventTitle(
+      this.gcal,
+      calendarId,
+      choreId,
+      COMPLETED_PREFIX,
+      "remove",
+    );
+
+    if (!result.success) {
+      throw result.error instanceof Error ? result.error : new Error(String(result.error));
+    }
+
+    return new Chore(
+      result.data.id,
+      result.data.summary,
+      result.data.description ?? "",
+      result.data.start,
+      result.data.color ?? this.calendarColor,
+    );
   }
 
   private async getCalendarInfo(): Promise<{ calendarId: string; calendarColor: Color | null }> {
@@ -50,9 +86,9 @@ export class ChoresApi {
     }
 
     const calendars = await this.gcal.listCalendars();
-    const choreCalendar = calendars.find((c) => c.title === this.calendarName);
+    const choreCalendar = calendars.find((c) => c.id === this.choreCalendarId);
     if (!choreCalendar) {
-      throw new Error(`Chore calendar "${this.calendarName}" not found`);
+      throw new Error(`Chore calendar with id "${this.choreCalendarId}" not found`);
     }
     this.calendarId = choreCalendar.id;
     this.calendarColor = choreCalendar.color;

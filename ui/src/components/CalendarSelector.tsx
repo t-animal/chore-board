@@ -7,7 +7,7 @@ import { loadConfig, storeConfig } from "../lib/storage";
 
 export function CalendarSelector() {
   const { isAuthenticated } = useAuth();
-  const { gcalApi, selectedCalendar, setSelectedCalendar } = useChores();
+  const { gcalApi, selectedCalendar, selectCalendar } = useChores();
 
   const [calendars, setCalendars] = useState<Calendar[] | null>(null);
   const [selectedId, setSelectedId] = useState<string>("");
@@ -34,7 +34,7 @@ export function CalendarSelector() {
         if (storedCalendarId) {
           const storedCalendar = list.find((c) => c.id === storedCalendarId) ?? null;
           if (storedCalendar) {
-            setSelectedCalendar(storedCalendar);
+            selectCalendar(storedCalendar);
             setSelectedId(storedCalendar.id);
             return;
           }
@@ -52,7 +52,7 @@ export function CalendarSelector() {
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated, gcalApi, setSelectedCalendar, storedCalendarId]);
+  }, [isAuthenticated, gcalApi, selectCalendar, storedCalendarId]);
 
   if (!isAuthenticated) return null;
   if (selectedCalendar) return null;
@@ -79,7 +79,7 @@ export function CalendarSelector() {
             const calendar = calendars.find((c) => c.id === id) ?? null;
             if (!calendar) return;
 
-            setSelectedCalendar(calendar);
+            selectCalendar(calendar);
 
             const current = loadConfig();
             storeConfig({ ...current, selectedCalendar: id });
