@@ -14,7 +14,7 @@ export function CalendarSelector() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const storedCalendarId = useMemo(() => loadConfig().selectedCalendar, []);
+  const storedCalendarId = useMemo(() => loadConfig().selectedCalendar?.id ?? null, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -82,7 +82,13 @@ export function CalendarSelector() {
             selectCalendar(calendar);
 
             const current = loadConfig();
-            storeConfig({ ...current, selectedCalendar: id });
+            storeConfig({
+              ...current,
+              selectedCalendar: {
+                id,
+                title: calendar.title,
+              },
+            });
           }}
         >
           <option value="" disabled>

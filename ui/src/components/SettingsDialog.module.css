@@ -1,0 +1,41 @@
+.dialog {
+  width: min(90vw, 520px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.section h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.dialog select,
+.dialog input[type="range"] {
+  width: 100%;
+  margin-top: 0.5rem;
+}
