@@ -32,7 +32,10 @@ section.chore.completed {
 }
 
 section.chore h2 {
-  margin: 0px;
+  margin: -5px;
+  margin-bottom: 0.5em;
+  padding: 5px;
+
 }
 
 section.chore .description {
@@ -62,6 +65,6 @@ section.chore .loader-container {
   }
 
   100% {
-    box-shadow: 0px 0px 12px 6px var(--alarm-color), inset 0px 0px 6px 2px var(--alarm-color);
+    box-shadow: 0px 0px 12px 6px var(--alarm-color);
   }
 }

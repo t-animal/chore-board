@@ -52,7 +52,14 @@ export function Chore({ chore }: { chore: ChoreItem }) {
           <div className="loader">Updating…</div>
         </div>
       )}
-      <h2 style={{ color: chore.color?.background ?? "inherit" }}>{title}</h2>
+      <h2
+        style={{
+          color: chore.color?.foreground ?? "inherit",
+          backgroundColor: chore.color?.background ?? "inherit",
+        }}
+      >
+        {title}
+      </h2>
       <div className={style["description"]}>
         {description
           .replaceAll("<br>", "\n")
