@@ -19,18 +19,12 @@ export class ChoresApi {
   }
 
   async getChores(daysInPast: number, daysInFuture: number, maxChores: number): Promise<Chore[]> {
-    const { calendarId, calendarColor } = await this.getCalendarInfo();
+    const { calendarId } = await this.getCalendarInfo();
     const events = await listEvents(this.gcal, calendarId, daysInPast, daysInFuture, maxChores);
 
     return events.map(
       (event) =>
-        new Chore(
-          event.id,
-          event.summary,
-          event.description || "",
-          event.start,
-          event.color ?? calendarColor,
-        ),
+        new Chore(event.id, event.summary, event.description || "", event.start, event.color),
     );
   }
 
@@ -53,7 +47,7 @@ export class ChoresApi {
       result.data.summary,
       result.data.description ?? "",
       result.data.start,
-      result.data.color ?? this.calendarColor,
+      result.data.color,
     );
   }
 
