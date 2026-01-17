@@ -112,9 +112,16 @@ export class GCalApiBrowser implements GCalApi {
       calendarId,
       eventId,
       resource: {
+        ...originalEvent,
         summary: newSummary,
         start: originalEvent.start,
         end: originalEvent.end,
+        reminders: {
+          ...originalEvent.reminders,
+          overrides: originalEvent.reminders?.overrides ?? [],
+        },
+        gadget: undefined,
+        originalStartTime: undefined,
       },
     });
 

@@ -91,7 +91,7 @@ export class GCalApiNode implements GCalApi {
     const patchRes = await this.calendar.events.patch({
       calendarId,
       eventId,
-      requestBody: { summary: newSummary },
+      requestBody: { ...originalEvent, summary: newSummary },
     });
 
     const patchedEvent = await parseEvent(patchRes.data, this);
