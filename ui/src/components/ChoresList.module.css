@@ -11,7 +11,6 @@
 
   max-height: 1000px;
   margin-block: 0;
-  overflow: hidden;
 
   transition:
     opacity 250ms ease,
@@ -23,6 +22,7 @@
 .chores-list li.completed {
   opacity: 0;
   max-height: 0;
+  overflow: hidden;
   margin-block: calc(var(--chores-gap) * -0.5);
   pointer-events: none;
 }
