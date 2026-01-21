@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Temporal } from "temporal-polyfill";
 import { useAuth } from "../contexts/AuthContext";
 import { useChores } from "../contexts/ChoresApiContext";
+import { loadConfig } from "../lib/storage";
 import { Chore } from "./Chore";
 import style from "./ChoresList.module.css";
 
@@ -24,6 +25,7 @@ export function ChoresList() {
   if (!chores) return null;
 
   const now = Temporal.Now.instant();
+  const { cleanUpTime } = loadConfig();
 
   const choresWithDaysRemaining = chores.map((chore) => {
     const daysRemaining = now.until(chore.dueDate).total("days");
@@ -47,7 +49,13 @@ export function ChoresList() {
         <li
           key={chore.id}
           data-days-remaining={Math.round(daysRemaining)}
-          className={[chore.isCompleted() ? style.completed : null].filter(Boolean).join(" ")}
+          className={[
+            chore.isCompleted() && (chore.isPastDue() || cleanUpTime === "immediately")
+              ? style.completed
+              : null,
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           <Chore chore={chore} />
         </li>
@@ -60,7 +68,11 @@ export function ChoresList() {
             <li
               key={chore.id}
               data-days-remaining={Math.round(daysRemaining)}
-              className={[chore.isCompleted() ? style.completed : null].filter(Boolean).join(" ")}
+              className={[
+                chore.isCompleted() && cleanUpTime === "immediately" ? style.completed : null,
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
               <Chore chore={chore} />
             </li>
@@ -75,7 +87,11 @@ export function ChoresList() {
             <li
               key={chore.id}
               data-days-remaining={Math.round(daysRemaining)}
-              className={[chore.isCompleted() ? style.completed : null].filter(Boolean).join(" ")}
+              className={[
+                chore.isCompleted() && cleanUpTime === "immediately" ? style.completed : null,
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
               <Chore chore={chore} />
             </li>

@@ -70,7 +70,7 @@ export function SettingsDialog({ open, onClose }: SettingsDialogProps) {
 
       <ChoresHistorySection
         open={open}
-        onBacklogDaysCommitted={() => {
+        onConfigCommitted={() => {
           void loadChores();
         }}
       />
@@ -206,24 +206,36 @@ function CalendarSection({
 
 function ChoresHistorySection({
   open,
-  onBacklogDaysCommitted,
+  onConfigCommitted,
 }: {
   open: boolean;
-  onBacklogDaysCommitted: () => void;
+  onConfigCommitted: () => void;
 }) {
   const [backlogDays, setBacklogDays] = useState<number>(() => loadConfig().backlogTimeSpan);
+  const [hideDoneChoresImmediately, setHideDoneChoresImmediately] = useState<boolean>(
+    () => loadConfig().cleanUpTime === "immediately",
+  );
 
   const commitBacklogDays = (days: number) => {
     const current = loadConfig();
     if (current.backlogTimeSpan === days) return;
     storeConfig({ ...current, backlogTimeSpan: days });
-    onBacklogDaysCommitted();
+    onConfigCommitted();
+  };
+
+  const commitCleanupTime = (value: boolean) => {
+    const current = loadConfig();
+    const cleanUpTime = value ? "immediately" : "when-due";
+    if (current.cleanUpTime === cleanUpTime) return;
+    storeConfig({ ...current, cleanUpTime });
+    onConfigCommitted();
   };
 
   useEffect(() => {
     if (!open) return;
     const cfg = loadConfig();
     setBacklogDays(cfg.backlogTimeSpan);
+    setHideDoneChoresImmediately(cfg.cleanUpTime === "immediately");
   }, [open]);
 
   return (
@@ -251,6 +263,19 @@ function ChoresHistorySection({
             commitBacklogDays(backlogDays);
           }}
         />
+      </label>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={hideDoneChoresImmediately}
+          onChange={(e) => {
+            const value = e.target.checked;
+            setHideDoneChoresImmediately(value);
+            commitCleanupTime(value);
+          }}
+        />{" "}
+        Hide done chores immediately
       </label>
     </section>
   );
