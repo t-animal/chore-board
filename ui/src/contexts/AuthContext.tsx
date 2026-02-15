@@ -14,6 +14,7 @@ import { getClientId } from "./ClientId";
 
 type AuthContextValue = {
   isAuthenticated: boolean;
+  isAuthenticating: boolean;
   login: () => Promise<void>;
   logout: () => void;
 };
@@ -22,7 +23,24 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const initializedRef = useRef(false);
+
+  const performLoginWithGoogle = useCallback((opts?: { isCancelled?: () => boolean }) => {
+    setIsAuthenticating(true);
+    google.accounts.id.prompt((notification) => {
+      if (opts?.isCancelled?.()) return;
+
+      const ended =
+        notification?.isNotDisplayed?.() ||
+        notification?.isSkippedMoment?.() ||
+        notification?.isDismissedMoment?.();
+
+      if (ended) {
+        setIsAuthenticating(false);
+      }
+    });
+  }, []);
 
   const initializeIfNeeded = useCallback(async () => {
     if (initializedRef.current) return;
@@ -36,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       auto_select: true,
       callback: () => {
         setIsAuthenticated(true);
+        setIsAuthenticating(false);
       },
     });
 
@@ -47,13 +66,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     void (async () => {
       try {
+        setIsAuthenticating(true);
         await initializeIfNeeded();
         if (cancelled) {
           return;
         }
 
-        google.accounts.id.prompt();
+        performLoginWithGoogle({
+          isCancelled: () => cancelled,
+        });
       } catch (err) {
+        if (!cancelled) {
+          setIsAuthenticating(false);
+        }
         console.error(err);
       }
     })();
@@ -61,15 +86,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [initializeIfNeeded]);
+  }, [initializeIfNeeded, performLoginWithGoogle]);
 
   const login = useCallback(async () => {
-    await initializeIfNeeded();
-    google.accounts.id.prompt();
-  }, [initializeIfNeeded]);
+    setIsAuthenticating(true);
+    try {
+      await initializeIfNeeded();
+      performLoginWithGoogle();
+    } catch (err) {
+      setIsAuthenticating(false);
+      throw err;
+    }
+  }, [initializeIfNeeded, performLoginWithGoogle]);
 
   const logout = useCallback(() => {
     setIsAuthenticated(false);
+    setIsAuthenticating(false);
     google.accounts.id.cancel();
     google.accounts.id.disableAutoSelect();
   }, []);
@@ -77,10 +109,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<AuthContextValue>(
     () => ({
       isAuthenticated,
+      isAuthenticating,
       login,
       logout,
     }),
-    [isAuthenticated, login, logout],
+    [isAuthenticated, isAuthenticating, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
