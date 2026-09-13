@@ -1,7 +1,7 @@
 import type { GCalApi } from "./gcal-api-common.js";
 
 type BrowserOptions = {
-  clientId: string;
+  accessToken: string;
 };
 
 export function getGcalApi(options: BrowserOptions, adapter: "browser"): Promise<GCalApi>;
@@ -18,6 +18,6 @@ export async function getGcalApi(
   const gapi = GCalApiBrowser.getGapi();
 
   const api = new GCalApiBrowser(gapi);
-  await api.init(options.clientId);
+  await api.init(options.accessToken);
   return api;
 }

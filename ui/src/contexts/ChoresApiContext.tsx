@@ -19,7 +19,6 @@ import {
 } from "react";
 import { loadConfig } from "../lib/storage";
 import { useAuth } from "./AuthContext.tsx";
-import { getClientId } from "./ClientId.ts";
 
 type ChoresContextValue = {
   gcalApi: GCalApi | null;
@@ -41,7 +40,7 @@ type ChoresContextValue = {
 const ChoresContext = createContext<ChoresContextValue | null>(null);
 
 export function ChoresApiProvider({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, accessToken } = useAuth();
 
   const [gcalApi, setGcalApi] = useState<GCalApi | null>(null);
   const [selectedCalendar, setSelectedCalendar] = useState<Calendar | null>(null);
@@ -74,7 +73,7 @@ export function ChoresApiProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
-    if (!isAuthenticated) {
+    if (accessToken === null) {
       setGcalApi(null);
       setChoresApi(null);
       setSelectedCalendar(null);
@@ -85,8 +84,7 @@ export function ChoresApiProvider({ children }: { children: React.ReactNode }) {
 
     const initGcalApi = async () => {
       await window.googleApisLoaded;
-      const clientId = getClientId();
-      const api = await getGcalApi({ clientId }, "browser");
+      const api = await getGcalApi({ accessToken }, "browser");
       if (cancelled) return;
       setGcalApi(api);
     };
@@ -100,7 +98,7 @@ export function ChoresApiProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated, resetChoresState]);
+  }, [accessToken, resetChoresState]);
 
   useEffect(() => {
     if (!gcalApi || !selectedCalendar) {

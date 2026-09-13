@@ -26,20 +26,25 @@ export class GCalApiBrowser implements GCalApi {
     return localGapi;
   }
 
-  async init(
-    clientId: string,
-    scopes: string[] = ["https://www.googleapis.com/auth/calendar"],
-  ): Promise<void> {
-    return new Promise((resolve) =>
+  /**
+   * Authorises requests with an OAuth access token, e.g. one obtained from
+   * google.accounts.oauth2 in the browser.
+   */
+  async init(accessToken: string): Promise<void> {
+    await new Promise<void>((resolve) =>
       this.gapi.load("client", async () => {
         await this.gapi.client.init({
-          clientId,
-          scope: scopes.join(" "),
           discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
         });
         resolve();
       }),
     );
+
+    this.setAccessToken(accessToken);
+  }
+
+  setAccessToken(accessToken: string): void {
+    this.gapi.client.setToken({ access_token: accessToken });
   }
 
   async listCalendars(): Promise<Calendar[]> {

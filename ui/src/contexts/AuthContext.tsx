@@ -1,20 +1,18 @@
-import "../../types/GoogleServices.d.ts";
-
 import type React from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { getClientId } from "./ClientId";
+  type AuthState,
+  getAuthState,
+  requestAccessToken,
+  restoreAccessToken,
+  signOut,
+  subscribeToAuthState,
+} from "../lib/googleAuth";
 
 type AuthContextValue = {
   isAuthenticated: boolean;
   isAuthenticating: boolean;
+  accessToken: string | null;
   login: () => Promise<void>;
   logout: () => void;
 };
@@ -22,98 +20,38 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const initializedRef = useRef(false);
+  const [authState, setAuthState] = useState<AuthState>(getAuthState);
 
-  const performLoginWithGoogle = useCallback((opts?: { isCancelled?: () => boolean }) => {
-    setIsAuthenticating(true);
-    google.accounts.id.prompt((notification) => {
-      if (opts?.isCancelled?.()) return;
-
-      const ended =
-        notification?.isNotDisplayed?.() ||
-        notification?.isSkippedMoment?.() ||
-        notification?.isDismissedMoment?.();
-
-      if (ended) {
-        setIsAuthenticating(false);
-      }
-    });
-  }, []);
-
-  const initializeIfNeeded = useCallback(async () => {
-    if (initializedRef.current) return;
-
-    await window.googleIdentityServicesLoaded;
-
-    const clientId = getClientId();
-    google.accounts.id.initialize({
-      client_id: clientId,
-      ux_mode: "popup",
-      auto_select: true,
-      callback: () => {
-        setIsAuthenticated(true);
-        setIsAuthenticating(false);
-      },
-    });
-
-    initializedRef.current = true;
+  useEffect(() => {
+    setAuthState(getAuthState());
+    return subscribeToAuthState(setAuthState);
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    void (async () => {
-      try {
-        setIsAuthenticating(true);
-        await initializeIfNeeded();
-        if (cancelled) {
-          return;
-        }
-
-        performLoginWithGoogle({
-          isCancelled: () => cancelled,
-        });
-      } catch (err) {
-        if (!cancelled) {
-          setIsAuthenticating(false);
-        }
-        console.error(err);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [initializeIfNeeded, performLoginWithGoogle]);
+    void restoreAccessToken();
+  }, []);
 
   const login = useCallback(async () => {
-    setIsAuthenticating(true);
     try {
-      await initializeIfNeeded();
-      performLoginWithGoogle();
+      await requestAccessToken({ silent: false });
     } catch (err) {
-      setIsAuthenticating(false);
-      throw err;
+      console.error(err);
     }
-  }, [initializeIfNeeded, performLoginWithGoogle]);
+  }, []);
 
   const logout = useCallback(() => {
-    setIsAuthenticated(false);
-    setIsAuthenticating(false);
-    google.accounts.id.cancel();
-    google.accounts.id.disableAutoSelect();
+    signOut();
   }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      isAuthenticated,
-      isAuthenticating,
+      isAuthenticated: authState.accessToken !== null,
+      isAuthenticating: authState.isAuthenticating,
+      accessToken: authState.accessToken,
       login,
       logout,
     }),
-    [isAuthenticated, isAuthenticating, login, logout],
+    [authState, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

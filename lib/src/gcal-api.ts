@@ -7,7 +7,7 @@ type NodeOptions = {
 };
 
 type BrowserOptions = {
-  clientId: string;
+  accessToken: string;
 };
 
 export function getGcalApi(options: BrowserOptions, adapter: "browser"): Promise<GCalApi>;
@@ -29,7 +29,7 @@ export async function getGcalApi(
     }
     return await initNodeApi(options);
   } else {
-    if (options === undefined || !("clientId" in options)) {
+    if (options === undefined || !("accessToken" in options)) {
       throw new Error("Browser adapter requires browser options");
     }
     return await initBrowserApi(options as BrowserOptions);
@@ -41,7 +41,7 @@ async function initBrowserApi(options: BrowserOptions): Promise<GCalApi> {
   const gapi = GCalApiBrowser.getGapi();
 
   const api = new GCalApiBrowser(gapi);
-  await api.init(options.clientId);
+  await api.init(options.accessToken);
   return api;
 }
 

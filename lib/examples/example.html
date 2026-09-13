@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Calendar API Browser Example</title>
   <script async defer src="https://apis.google.com/js/api.js" ></script>
-  <script src="https://accounts.google.com/gsi/client" async onload="googleIdentityServicesTrampoline()"></script> <!-- Google Identity Services, see #g_id_onload -->
+  <script src="https://accounts.google.com/gsi/client" async onload="googleIdentityServicesTrampoline()"></script> <!-- Google Identity Services -->
 
   <script type="importmap">
   {
@@ -27,14 +27,15 @@
   </script>
   <script type="module">
     const CLIENT_ID = "278763558543-89sp3t9k6na9bvt9mdfj3u424v0v7l1k.apps.googleusercontent.com"; // Replace with your client ID
+    const SCOPE = "https://www.googleapis.com/auth/calendar";
 
     window.googleIdentityServicesLoaded = googleIdentityServicesTrampoline;
 
-    async function listCalendarsUsingFacade() {
+    async function listCalendarsUsingFacade(accessToken) {
       const { getGcalApi, listCalendars } = await import('../dist/index.js');
 
       try {
-        const api = await getGcalApi({clientId: CLIENT_ID}, 'browser');
+        const api = await getGcalApi({ accessToken }, 'browser');
         const calendars = await listCalendars(api);
 
         if (!calendars || calendars.length === 0) {
@@ -53,19 +54,31 @@
     }
 
     function googleIdentityServicesTrampoline() {
-      // https://developers.google.com/identity/gsi/web/reference/js-reference?hl=de
-      
-      google.accounts.id.initialize({
+      // The Calendar API needs an OAuth access token, so use the token client
+      // (google.accounts.oauth2) rather than One Tap, which only signs the user
+      // in and returns an ID token.
+      // https://developers.google.com/identity/oauth2/web/guides/use-token-model
+      const tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
-        ux_mode: "popup",
-        auto_select: true,
+        scope: SCOPE,
         callback: (response) => {
-          console.log("User is logged in, got response", response);
-          listCalendarsUsingFacade();
+          if (!response.access_token) {
+            document.getElementById('content').innerText =
+              `Error: ${response.error_description || response.error}`;
+            return;
+          }
+          listCalendarsUsingFacade(response.access_token);
+        },
+        error_callback: (error) => {
+          document.getElementById('content').innerText = `Error: ${error.message}`;
         },
       });
 
-      google.accounts.id.prompt(); // Display the One Tap prompt
+      const button = document.getElementById('authorize');
+      // requestAccessToken opens a popup, so it needs a user gesture.
+      button.onclick = () => tokenClient.requestAccessToken();
+      button.disabled = false;
+      document.getElementById('content').innerText = 'Click "Authorize" to list your calendars.';
     };
 
   </script>
@@ -74,6 +87,7 @@
 </head>
 <body>
   <h1>Google Calendar API Browser Example</h1>
+  <button id="authorize" type="button" disabled>Authorize</button>
   <pre id="content" style="white-space: pre-wrap;">Loading...</pre>
 </body>
 </html>
